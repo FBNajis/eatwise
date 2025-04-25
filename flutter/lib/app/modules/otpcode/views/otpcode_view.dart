@@ -1,9 +1,8 @@
 import 'package:eatwise/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:flutter/gestures.dart';
 import '../controllers/otpcode_controller.dart';
 
 class OtpcodeView extends StatefulWidget {
@@ -16,9 +15,21 @@ class _OtpcodeViewState extends State<OtpcodeView> {
   final List<TextEditingController> otpControllers =
       List.generate(4, (index) => TextEditingController());
   final List<FocusNode> focusNodes = List.generate(4, (index) => FocusNode());
+  late TapGestureRecognizer _resendTap;
+
+  @override
+  void initState() {
+    super.initState();
+    _resendTap = TapGestureRecognizer()
+      ..onTap = () {
+        final email = Get.arguments['email'];
+        controller.resendOtp(email);
+      };
+  }
 
   @override
   void dispose() {
+    _resendTap.dispose(); // ini penting!
     for (var controller in otpControllers) {
       controller.dispose();
     }
@@ -185,21 +196,31 @@ class _OtpcodeViewState extends State<OtpcodeView> {
                       }),
                     ),
                     const SizedBox(height: 20),
-                    Text.rich(
-                      TextSpan(
-                        text: "If you didn't receive a code, ",
-                        style: GoogleFonts.poppins(fontSize: 12),
-                        children: [
-                          TextSpan(
-                            text: "Resend",
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xffCE181B),
+                    Obx(() {
+                      final isAvailable = controller.isResendAvailable.value;
+                      final countdownValue = controller.countdown.value;
+
+                      return Text.rich(
+                        TextSpan(
+                          text: "If you didn’t receive a code, ",
+                          style: GoogleFonts.poppins(fontSize: 12),
+                          children: [
+                            TextSpan(
+                              text: isAvailable
+                                  ? "Resend"
+                                  : "Resend in $countdownValue s", // Show countdown
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: isAvailable
+                                    ? const Color(0xffCE181B)
+                                    : Colors.grey,
+                              ),
+                              recognizer: isAvailable ? _resendTap : null,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          ],
+                        ),
+                      );
+                    }),
                     const SizedBox(height: 25),
                     SizedBox(
                         width: double.infinity,

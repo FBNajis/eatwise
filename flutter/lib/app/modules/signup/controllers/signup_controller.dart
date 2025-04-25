@@ -12,6 +12,19 @@ class SignupController extends GetxController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
+  // Add RxBool variables to track password visibility
+  final isPasswordVisible = false.obs;
+  final isConfirmPasswordVisible = false.obs;
+
+  // Toggle functions for password visibility
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
+
+  void toggleConfirmPasswordVisibility() {
+    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
+  }
+
   Future<void> signUp() async {
     final username = usernameController.text.trim();
     final fullName = fullNameController.text.trim();
@@ -27,6 +40,11 @@ class SignupController extends GetxController {
         password.isEmpty ||
         confirmPassword.isEmpty) {
       Get.snackbar("Error", "Please fill all fields");
+      return;
+    }
+
+    if (password.length < 8) {
+      Get.snackbar("Error", "Password must be at least 8 characters long");
       return;
     }
 

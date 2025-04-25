@@ -56,19 +56,24 @@ class SignupView extends GetView<SignupController> {
                         controller.phoneController),
                     buildInputField("Email", "Enter your email...",
                         controller.emailController),
-                    buildPasswordField("Password", "Enter your password...",
-                        controller.passwordController),
+                    buildPasswordField(
+                        "Password",
+                        "Enter your password...",
+                        controller.passwordController,
+                        controller.isPasswordVisible,
+                        controller.togglePasswordVisibility),
                     buildPasswordField(
                         "Confirm Password",
                         "Confirm your password...",
-                        controller.confirmPasswordController),
+                        controller.confirmPasswordController,
+                        controller.isConfirmPasswordVisible,
+                        controller.toggleConfirmPasswordVisibility),
                     SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
                           controller.signUp();
-                          Get.offNamed(Routes.SIGNUP);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xffCE181B),
@@ -125,7 +130,7 @@ class SignupView extends GetView<SignupController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.poppins(fontSize: 15)),
-        SizedBox(height: 1),
+        SizedBox(height: 7),
         TextField(
           controller: controller,
           decoration: InputDecoration(
@@ -149,31 +154,41 @@ class SignupView extends GetView<SignupController> {
   }
 
   Widget buildPasswordField(
-      String label, String hint, TextEditingController controller) {
+      String label,
+      String hint,
+      TextEditingController controller,
+      RxBool isVisible,
+      Function() toggleVisibility) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.poppins(fontSize: 15)),
         SizedBox(height: 7),
-        TextField(
-          obscureText: true,
-          controller: controller,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Color(0xffFFF3F3),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            hintText: hint,
-            hintStyle: GoogleFonts.poppins(
-              fontWeight: FontWeight.w400,
-              color: Colors.grey,
-              fontSize: 14,
-            ),
-            suffixIcon: Icon(Icons.visibility_off),
-          ),
-        ),
+        Obx(() => TextField(
+              obscureText: !isVisible.value,
+              controller: controller,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Color(0xffFFF3F3),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                hintText: hint,
+                hintStyle: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isVisible.value ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.grey,
+                  ),
+                  onPressed: toggleVisibility,
+                ),
+              ),
+            )),
         SizedBox(height: 13),
       ],
     );

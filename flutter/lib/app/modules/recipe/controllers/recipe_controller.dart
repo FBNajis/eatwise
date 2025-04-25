@@ -74,11 +74,17 @@ class RecipeController extends GetxController with WidgetsBindingObserver {
     final list = groupedRecipes[dateKey];
     if (list == null) return [];
 
-    if (searchQuery.value.isEmpty) {
-      return List<Map<String, dynamic>>.from(list);
+    List<Map<String, dynamic>> recipes = [];
+
+    for (var recipe in list) {
+      recipes.add(Map<String, dynamic>.from(recipe));
     }
 
-    return List<Map<String, dynamic>>.from(list).where((recipe) {
+    if (searchQuery.value.isEmpty) {
+      return recipes;
+    }
+
+    return recipes.where((recipe) {
       return recipe['name']
           .toString()
           .toLowerCase()
