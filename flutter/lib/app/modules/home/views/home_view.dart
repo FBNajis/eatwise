@@ -56,21 +56,27 @@ class HomeView extends GetView<HomeController> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(height: 50),
-                                    Row(
-                                      children: [
-                                        Obx(() => Text(
-                                              'Hello, ${controller.username.value}!',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                            )),
-                                        SizedBox(width: 5),
-                                        Icon(Icons.waving_hand,
-                                            color: Colors.amber)
-                                      ],
-                                    ),
+                                    Obx(() {
+                                      if (!controller.isUsernameReady.value) {
+                                        return SizedBox(); // atau loader kecil jika mau
+                                      }
+
+                                      return Row(
+                                        children: [
+                                          Text(
+                                            'Hello, ${controller.username.value}!',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Icon(Icons.waving_hand,
+                                              color: Colors.amber),
+                                        ],
+                                      );
+                                    }),
                                     SizedBox(height: 17),
                                     Text(
                                       'Unleash Your Culinary \nCreativity And Start \nCooking Today!',
@@ -348,6 +354,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  /* The rest of your class methods remain unchanged */
   Widget _buildRecommendations() {
     if (controller.isLoading.value) {
       return Padding(
