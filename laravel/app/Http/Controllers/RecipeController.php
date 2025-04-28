@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Recipe;
-use App\Models\User;
-use App\Models\Comment;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -136,20 +134,6 @@ class RecipeController extends Controller
         ]);
     }
 
-    public function show($id)
-    {
-        $recipe = Recipe::select('id', 'user_id', 'name', 'description', 'cost_estimation', 'cooking_time', 'ingredients', 'instructions', 'tag', 'image_path', 'created_at')
-            ->with(['user:id,fullname'])
-            ->withCount('favorites')
-            ->approved()
-            ->findOrFail($id);
-
-        return response()->json([
-            'message' => 'Recipe retrieved successfully',
-            'data' => $this->formatRecipeResponse($recipe),
-        ]);
-    }
-
     public function store(Request $request)
     {
         Log::info('Creating new recipe', ['user_id' => $request->user()->id]);
@@ -264,49 +248,22 @@ class RecipeController extends Controller
     public function like(Request $request, $id)
     {
         $recipe = Recipe::findOrFail($id);
-        $user = $request->user();
-
-        // Check if the recipe is already liked
-        if (!$user->favoriteRecipes()->where('recipe_id', $recipe->id)->exists()) {
-            // Add to favorites if not already liked
-            $user->favoriteRecipes()->attach($recipe->id);
-        }
+        $request->user()->favoriteRecipes()->syncWithoutDetaching([$recipe->id]);
 
         return response()->json([
             'message' => 'Recipe liked successfully',
         ]);
     }
 
-
     public function unlike(Request $request, $id)
     {
         $recipe = Recipe::findOrFail($id);
-        $user = $request->user();
-
-        // Check if the recipe is liked before removing
-        if ($user->favoriteRecipes()->where('recipe_id', $recipe->id)->exists()) {
-            $user->favoriteRecipes()->detach($recipe->id);
-        }
+        $request->user()->favoriteRecipes()->detach($recipe->id);
 
         return response()->json([
             'message' => 'Recipe unliked successfully',
         ]);
     }
-
-
-    public function checkLike($id)
-    {
-        $recipe = Recipe::findOrFail($id);
-        $user = auth()->user();
-
-        $isLiked = $recipe->favorites()->where('user_id', $user->id)->exists();
-
-        return response()->json([
-            'message' => 'Like status fetched successfully',
-            'is_liked' => $isLiked,
-        ]);
-    }
-
 
     public function likedRecipes(Request $request)
     {
@@ -321,56 +278,6 @@ class RecipeController extends Controller
         return response()->json([
             'message' => 'Liked recipes retrieved successfully',
             'data' => $recipes,
-        ]);
-    }
-
-    public function addComment(Request $request, $recipeId)
-    {
-        $recipe = Recipe::findOrFail($recipeId);
-
-        $validated = $request->validate([
-            'comment' => 'required|string|max:1000',
-        ]);
-
-        $comment = Comment::create([
-            'user_id' => $request->user()->id,
-            'recipe_id' => $recipeId,
-            'comment' => $validated['comment'],
-        ]);
-
-        return response()->json([
-            'message' => 'Comment added successfully',
-            'data' => [
-                'id' => $comment->id,
-                'username' => $request->user()->username,  // Display username
-                'comment' => $comment->comment,
-                'created_at' => $comment->created_at->toDateTimeString(),
-            ],
-        ]);
-    }
-
-    public function getComments($recipeId)
-    {
-        $recipe = Recipe::findOrFail($recipeId);
-
-        $comments = $recipe->comments()
-            ->with('user:id,username,image_path')  // Include image_path in the query
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($comment) {
-                return [
-                    'id' => $comment->id,
-                    'username' => $comment->user->username,
-                    'comment' => $comment->comment,
-                    'created_at' => $comment->created_at->toDateTimeString(),
-                    'user_image_path' => $comment->user->image_path, // Include user profile image
-                ];
-            });
-
-        return response()->json([
-            'message' => 'Comments retrieved successfully',
-            'comment_count' => $comments->count(),
-            'data' => $comments,
         ]);
     }
 

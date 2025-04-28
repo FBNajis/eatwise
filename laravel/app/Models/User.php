@@ -12,15 +12,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'username',
-        'fullname',
-        'phone_number',
-        'email',
-        'password',
-        'otp',
-        'image_path',
+        'username', 'fullname', 'phone_number', 'email', 'password', 'otp',
     ];
-    
 
     protected $hidden = [
         'password',
@@ -31,10 +24,4 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Recipe::class, 'favorites');
     }
-
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
 }

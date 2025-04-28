@@ -294,7 +294,6 @@ class RecipeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        print("Clicked on recipe: ${recipe['name']} with ID: ${recipe['id']}");
         Get.toNamed(Routes.EDITDELETERECIPE, arguments: recipe);
         if (onEdit != null) onEdit!();
       },

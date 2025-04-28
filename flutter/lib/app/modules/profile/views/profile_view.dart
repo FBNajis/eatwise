@@ -45,92 +45,111 @@ class _ProfileViewState extends State<ProfileView> {
                 alignment: Alignment.center,
                 children: [
                   Obx(() {
-                    final selectedImage = profileController.selectedImage.value;
-                    final imageUrl = profileController.imageUrl.value;
-
-                    return Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.grey.shade200,
-                          backgroundImage: selectedImage != null
-                              ? FileImage(File(selectedImage.path))
-                              : (imageUrl.isNotEmpty
-                                  ? NetworkImage(imageUrl)
-                                  : null) as ImageProvider?,
-                          child: selectedImage == null && imageUrl.isEmpty
-                              ? Icon(Icons.person, size: 50, color: Colors.grey)
-                              : null,
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: GestureDetector(
-                            onTap: () async {
-                              await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text('Select Image Source'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.pop(context);
-                                        final picker = ImagePicker();
-                                        final pickedFile =
-                                            await picker.pickImage(
-                                                source: ImageSource.gallery);
-                                        if (pickedFile != null) {
-                                          profileController
-                                              .selectedImage.value = pickedFile;
-                                        }
-                                      },
-                                      child: Text('Gallery'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.pop(context);
-                                        final picker = ImagePicker();
-                                        final pickedFile =
-                                            await picker.pickImage(
-                                                source: ImageSource.camera);
-                                        if (pickedFile != null) {
-                                          profileController
-                                              .selectedImage.value = pickedFile;
-                                        }
-                                      },
-                                      child: Text('Camera'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    spreadRadius: 1,
-                                    blurRadius: 3,
-                                    offset: Offset(0, 1),
-                                  ),
-                                ],
-                              ),
-                              child: Icon(
-                                Icons.edit,
-                                size: 18,
-                                color: Color(0xffCE181B),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    return CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.grey.shade200,
+                      backgroundImage: profileController.selectedImage.value !=
+                              null
+                          ? FileImage(
+                              File(profileController.selectedImage.value!.path))
+                          : (profileController.imageUrl.value.isNotEmpty
+                              ? NetworkImage(profileController.imageUrl.value)
+                              : null) as ImageProvider?,
+                      child: profileController.imageUrl.value.isEmpty &&
+                              profileController.selectedImage.value == null
+                          ? Icon(Icons.person, size: 50, color: Colors.grey)
+                          : null,
                     );
-                  })
+                  }),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: GestureDetector(
+                      onTap: () async {
+                        // Show a dialog to pick an image source (camera or gallery)
+                        await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Select Image Source'),
+                            actions: [
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  final picker = ImagePicker();
+                                  final pickedFile = await picker.pickImage(
+                                      source: ImageSource.gallery);
+                                  if (pickedFile != null) {
+                                    profileController.selectedImage.value =
+                                        pickedFile;
+                                  }
+                                },
+                                child: Text('Gallery'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  final picker = ImagePicker();
+                                  final pickedFile = await picker.pickImage(
+                                      source: ImageSource.camera);
+                                  if (pickedFile != null) {
+                                    profileController.selectedImage.value =
+                                        pickedFile;
+                                  }
+                                },
+                                child: Text('Camera'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: Obx(() => Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: profileController.selectedImage.value == null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 28,
+                                        height: 28,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              spreadRadius: 1,
+                                              blurRadius: 3,
+                                              offset: Offset(0, 1),
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Icon(
+                                          Icons.edit,
+                                          size: 16,
+                                          color: Color(0xffCE181B),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.file(
+                                      File(profileController
+                                          .selectedImage.value!.path),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                          )),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 30),

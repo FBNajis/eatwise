@@ -1,3 +1,4 @@
+import 'package:eatwise/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
@@ -7,17 +8,17 @@ import 'package:flutter/gestures.dart';
 class OtpforgotpasswordView extends StatefulWidget {
   @override
   _OtpforgotpasswordViewState createState() => _OtpforgotpasswordViewState();
+
 }
 
 class _OtpforgotpasswordViewState extends State<OtpforgotpasswordView> {
-  final OtpforgotpasswordController controller =
-      Get.put(OtpforgotpasswordController());
+  final OtpforgotpasswordController controller = Get.find<OtpforgotpasswordController>();
   final List<TextEditingController> otpControllers =
-      List.generate(4, (index) => TextEditingController());
-  final List<FocusNode> focusNodes = List.generate(4, (index) => FocusNode());
+  List.generate(4, (index) => TextEditingController());
+  final List<FocusNode> focusNodes =
+  List.generate(4, (index) => FocusNode());
   late TapGestureRecognizer _resendTap;
 
-  final otpPasswordController = Get.find<OtpforgotpasswordController>();
 
   @override
   void initState() {
@@ -25,14 +26,14 @@ class _OtpforgotpasswordViewState extends State<OtpforgotpasswordView> {
     _resendTap = TapGestureRecognizer()
       ..onTap = () {
         final email = Get.arguments['email'];
-        otpPasswordController.resendOtp(email);
+        print('Email from arguments: $email');
+        controller.resendOtp(email);
       };
   }
 
   @override
-  @override
   void dispose() {
-    _resendTap.dispose(); // ini penting!
+    _resendTap.dispose();
     for (var controller in otpControllers) {
       controller.dispose();
     }
@@ -41,6 +42,7 @@ class _OtpforgotpasswordViewState extends State<OtpforgotpasswordView> {
     }
     super.dispose();
   }
+
 
   void handleOtpInput(int index, String value) {
     if (value.isNotEmpty && index < 3) {
@@ -132,8 +134,7 @@ class _OtpforgotpasswordViewState extends State<OtpforgotpasswordView> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
-                              onChanged: (value) =>
-                                  handleOtpInput(index, value),
+                              onChanged: (value) => handleOtpInput(index, value),
                               decoration: const InputDecoration(
                                 counterText: '',
                                 border: InputBorder.none,
@@ -145,10 +146,8 @@ class _OtpforgotpasswordViewState extends State<OtpforgotpasswordView> {
                     ),
                     const SizedBox(height: 20),
                     Obx(() {
-                      final isAvailable =
-                          otpPasswordController.isResendAvailable.value;
-                      final countdownValue =
-                          otpPasswordController.countdown.value;
+                      final isAvailable = controller.isResendAvailable.value;
+                      final countdownValue = controller.countdown.value;
 
                       return Text.rich(
                         TextSpan(
@@ -161,9 +160,7 @@ class _OtpforgotpasswordViewState extends State<OtpforgotpasswordView> {
                                   : "Resend in $countdownValue s", // Show countdown
                               style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.bold,
-                                color: isAvailable
-                                    ? const Color(0xffCE181B)
-                                    : Colors.grey,
+                                color: isAvailable ? const Color(0xffCE181B) : Colors.grey,
                               ),
                               recognizer: isAvailable ? _resendTap : null,
                             ),
@@ -171,13 +168,15 @@ class _OtpforgotpasswordViewState extends State<OtpforgotpasswordView> {
                         ),
                       );
                     }),
+
+
                     const SizedBox(height: 25),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          String otpCode =
-                              otpControllers.map((c) => c.text).join();
+                          String otpCode = otpControllers.map((c) => c.text).join();
+                          print("OTP Entered: $otpCode"); // Debug print
                           controller.verifyOtp(otpCode);
                         },
                         style: ElevatedButton.styleFrom(

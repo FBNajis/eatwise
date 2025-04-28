@@ -11,19 +11,9 @@ class SignupController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  var isPasswordHidden = true.obs;
+  var isConfirmPasswordHidden = true.obs;
 
-  // Add RxBool variables to track password visibility
-  final isPasswordVisible = false.obs;
-  final isConfirmPasswordVisible = false.obs;
-
-  // Toggle functions for password visibility
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  }
-
-  void toggleConfirmPasswordVisibility() {
-    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
-  }
 
   Future<void> signUp() async {
     final username = usernameController.text.trim();
@@ -54,13 +44,37 @@ class SignupController extends GetxController {
     }
 
     try {
+      // 1. Check username and email availability
+      final checkResponse = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/check-availability'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+        }),
+      );
+
+      if (checkResponse.statusCode != 200) {
+        final error = jsonDecode(checkResponse.body);
+        Get.snackbar("Unavailable", error['message'] ?? "Username or Email already taken");
+        return;
+      }
+
+      // 2. Send OTP
       final otpResponse = await http.post(
         Uri.parse('http://10.0.2.2:8000/api/send-otp'),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({'email': email}),
+        body: jsonEncode({
+          'email': email,
+          'fullname': fullName,
+          'username': username,
+        }),
       );
 
       if (otpResponse.statusCode == 200) {
@@ -74,8 +88,7 @@ class SignupController extends GetxController {
           'password': password,
         };
 
-        Get.offNamed(Routes.OTPCODE,
-            arguments: {'email': email, 'userData': userData});
+        Get.offNamed(Routes.OTPCODE, arguments: {'email': email, 'userData': userData});
       } else {
         final error = jsonDecode(otpResponse.body);
         Get.snackbar("Failed", error['message'] ?? "Failed to send OTP");
@@ -84,6 +97,9 @@ class SignupController extends GetxController {
       Get.snackbar("Error", "Exception: $e");
     }
   }
+
+
+
 
   @override
   void onClose() {

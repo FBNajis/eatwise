@@ -14,7 +14,8 @@ class _OtpcodeViewState extends State<OtpcodeView> {
   final controller = Get.put(OtpcodeController());
   final List<TextEditingController> otpControllers =
       List.generate(4, (index) => TextEditingController());
-  final List<FocusNode> focusNodes = List.generate(4, (index) => FocusNode());
+  final List<FocusNode> focusNodes =
+      List.generate(4, (index) => FocusNode());
   late TapGestureRecognizer _resendTap;
 
   @override
@@ -26,7 +27,6 @@ class _OtpcodeViewState extends State<OtpcodeView> {
         controller.resendOtp(email);
       };
   }
-
   @override
   void dispose() {
     _resendTap.dispose(); // ini penting!
@@ -71,7 +71,7 @@ class _OtpcodeViewState extends State<OtpcodeView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/images/noodle.png',
+                  'assets/images/noodle.png', 
                   height: 160,
                   width: 160,
                 ),
@@ -184,8 +184,7 @@ class _OtpcodeViewState extends State<OtpcodeView> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
-                              onChanged: (value) =>
-                                  handleOtpInput(index, value),
+                              onChanged: (value) => handleOtpInput(index, value),
                               decoration: const InputDecoration(
                                 counterText: '',
                                 border: InputBorder.none,
@@ -211,9 +210,7 @@ class _OtpcodeViewState extends State<OtpcodeView> {
                                   : "Resend in $countdownValue s", // Show countdown
                               style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.bold,
-                                color: isAvailable
-                                    ? const Color(0xffCE181B)
-                                    : Colors.grey,
+                                color: isAvailable ? const Color(0xffCE181B) : Colors.grey,
                               ),
                               recognizer: isAvailable ? _resendTap : null,
                             ),
@@ -223,43 +220,41 @@ class _OtpcodeViewState extends State<OtpcodeView> {
                     }),
                     const SizedBox(height: 25),
                     SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            String otpCode =
-                                otpControllers.map((e) => e.text).join();
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          String otpCode = otpControllers.map((e) => e.text).join();
 
-                            if (otpCode.length < 4) {
-                              Get.snackbar("Error",
-                                  "Please enter the full 4-digit OTP code");
-                              return;
-                            }
+                          if (otpCode.length < 4) {
+                            Get.snackbar("Error", "Please enter the full 4-digit OTP code");
+                            return;
+                          }
 
-                            bool isVerified =
-                                await controller.verifyOtp(otpCode);
+                          bool isVerified = await controller.verifyOtp(otpCode);
 
-                            if (isVerified) {
-                              showAccountCreatedPopup();
-                            } else {
-                              Get.snackbar("Error", "Invalid OTP code");
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xffCE181B),
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
+                          if (isVerified) {
+                            showAccountCreatedPopup();
+                          } else {
+                            Get.snackbar("Error", "Invalid OTP code");
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xffCE181B),
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                          child: Text(
-                            "Send",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                        ),
+                        child: Text(
+                          "Send",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                        )),
+                        ),
+                      )
+                    ),
                     const SizedBox(height: 160),
                   ],
                 ),

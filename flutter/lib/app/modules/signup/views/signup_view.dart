@@ -18,9 +18,13 @@ class SignupView extends GetView<SignupController> {
           child: Column(
             children: [
               SizedBox(height: 50),
-              Image.asset(
-                'assets/images/eatwiselogo.png',
-                height: 60,
+              Text(
+                "foodie",
+                style: GoogleFonts.poppins(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               SizedBox(height: 13),
               Padding(
@@ -46,34 +50,20 @@ class SignupView extends GetView<SignupController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 15),
-                    buildInputField("Username", "Enter username...",
-                        controller.usernameController),
-                    buildInputField("Full Name", "Enter your full name...",
-                        controller.fullNameController),
-                    buildInputField(
-                        "Phone Number",
-                        "Enter your phone number...",
-                        controller.phoneController),
-                    buildInputField("Email", "Enter your email...",
-                        controller.emailController),
-                    buildPasswordField(
-                        "Password",
-                        "Enter your password...",
-                        controller.passwordController,
-                        controller.isPasswordVisible,
-                        controller.togglePasswordVisibility),
-                    buildPasswordField(
-                        "Confirm Password",
-                        "Confirm your password...",
-                        controller.confirmPasswordController,
-                        controller.isConfirmPasswordVisible,
-                        controller.toggleConfirmPasswordVisibility),
+                    buildInputField("Username", "Enter username...", controller.usernameController),
+                    buildInputField("Full Name", "Enter your full name...", controller.fullNameController),
+                    buildInputField("Phone Number", "Enter your phone number...", controller.phoneController),
+                    buildInputField("Email", "Enter your email...", controller.emailController),
+                    buildPasswordField("Password", "Enter your password...", controller.passwordController, controller.isPasswordHidden),
+                    buildPasswordField("Confirm Password", "Confirm your password...", controller.confirmPasswordController, controller.isConfirmPasswordHidden),
+
                     SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
                           controller.signUp();
+                          Get.offNamed(Routes.SIGNUP);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xffCE181B),
@@ -95,7 +85,7 @@ class SignupView extends GetView<SignupController> {
                     SizedBox(height: 15),
                     Center(
                       child: GestureDetector(
-                        onTap: () => Get.toNamed(Routes.LOGIN),
+                        onTap: () => Get.toNamed(Routes.LOGIN), 
                         child: Text.rich(
                           TextSpan(
                             text: "Already Have an Account? ",
@@ -124,13 +114,12 @@ class SignupView extends GetView<SignupController> {
     );
   }
 
-  Widget buildInputField(
-      String label, String hint, TextEditingController controller) {
+  Widget buildInputField(String label, String hint,  TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.poppins(fontSize: 15)),
-        SizedBox(height: 7),
+        SizedBox(height: 1),
         TextField(
           controller: controller,
           decoration: InputDecoration(
@@ -153,44 +142,41 @@ class SignupView extends GetView<SignupController> {
     );
   }
 
-  Widget buildPasswordField(
-      String label,
-      String hint,
-      TextEditingController controller,
-      RxBool isVisible,
-      Function() toggleVisibility) {
+  Widget buildPasswordField(String label, String hint, TextEditingController controller, RxBool isHidden) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.poppins(fontSize: 15)),
         SizedBox(height: 7),
         Obx(() => TextField(
-              obscureText: !isVisible.value,
-              controller: controller,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Color(0xffFFF3F3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                hintText: hint,
-                hintStyle: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w400,
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isVisible.value ? Icons.visibility : Icons.visibility_off,
-                    color: Colors.grey,
-                  ),
-                  onPressed: toggleVisibility,
-                ),
+          obscureText: isHidden.value,
+          controller: controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Color(0xffFFF3F3),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            hintText: hint,
+            hintStyle: GoogleFonts.poppins(
+              fontWeight: FontWeight.w400,
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                isHidden.value ? Icons.visibility_off : Icons.visibility,
               ),
-            )),
+              onPressed: () {
+                isHidden.value = !isHidden.value;
+              },
+            ),
+          ),
+        )),
         SizedBox(height: 13),
       ],
     );
   }
+
 }

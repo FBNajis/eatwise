@@ -29,8 +29,7 @@ class OtpcodeController extends GetxController {
   Future<bool> sendOtp(String email) async {
     isLoading.value = true;
 
-    final url = Uri.parse(
-        'http://10.0.2.2:8000/api/send-otp'); // Ganti sesuai URL backend kamu
+    final url = Uri.parse('http://10.0.2.2:8000/api/send-otp'); // Ganti sesuai URL backend kamu
     try {
       final response = await http.post(
         url,
@@ -87,8 +86,7 @@ class OtpcodeController extends GetxController {
           return true;
         } else {
           final signupError = jsonDecode(signupResponse.body);
-          Get.snackbar(
-              'Signup Failed', signupError['message'] ?? 'Unknown error');
+          Get.snackbar('Signup Failed', signupError['message'] ?? 'Unknown error');
           return false;
         }
       } else {
@@ -102,7 +100,6 @@ class OtpcodeController extends GetxController {
       isLoading.value = false;
     }
   }
-
   void resendOtp(String email) async {
     if (!isResendAvailable.value) return;
 
@@ -122,8 +119,7 @@ class OtpcodeController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar(
-            "OTP Sent", "Kode OTP berhasil dikirim ulang ke email Anda.");
+        Get.snackbar("OTP Sent", "Kode OTP berhasil dikirim ulang ke email Anda.");
       } else {
         final error = jsonDecode(response.body);
         Get.snackbar("Gagal", error['message'] ?? "Gagal mengirim ulang OTP.");
@@ -156,4 +152,5 @@ class OtpcodeController extends GetxController {
     _countdownTimer?.cancel();
     super.onClose();
   }
+
 }

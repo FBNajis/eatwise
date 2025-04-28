@@ -15,18 +15,21 @@ class OtpforgotpasswordController extends GetxController {
   Timer? _countdownTimer;
 
   @override
+  @override
   void onInit() {
     super.onInit();
     final arguments = Get.arguments;
+
     print("Arguments in OTP Page: $arguments");
 
-    if (arguments != null && arguments is String) {
-      email = arguments;
+    if (arguments != null && arguments is Map && arguments.containsKey('email')) {
+      email = arguments['email'];
       print("Email received: $email");
     } else {
-      print("ERROR: Email is null or not a string");
+      print("ERROR: Email is null or not provided properly");
     }
   }
+
 
   Future<bool> sendOtp(String email) async {
     isLoading.value = true;
@@ -76,8 +79,7 @@ class OtpforgotpasswordController extends GetxController {
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
         Get.snackbar('Success', data['message'] ?? 'OTP verified successfully');
-        Get.toNamed(Routes.NEWPASSWORDFORGOTPASSWORD,
-            arguments: {'email': email});
+        Get.toNamed(Routes.NEWPASSWORDFORGOTPASSWORD, arguments: {'email': email});
 
         return true;
       } else {
@@ -111,8 +113,7 @@ class OtpforgotpasswordController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar(
-            "OTP Sent", "Kode OTP berhasil dikirim ulang ke email Anda.");
+        Get.snackbar("OTP Sent", "Kode OTP berhasil dikirim ulang ke email Anda.");
       } else {
         final error = jsonDecode(response.body);
         Get.snackbar("Gagal", error['message'] ?? "Gagal mengirim ulang OTP.");
@@ -146,42 +147,7 @@ class OtpforgotpasswordController extends GetxController {
     _countdownTimer?.cancel();
     super.onClose();
   }
+
+
 }
 
-
-  // late String email;
-  //
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   email = Get.arguments; // Ambil email dari argument
-  //   print('Email untuk verifikasi OTP: $email'); // Debug log
-  // }
-  // void verifyOtp(String otpCode) {
-  //   const correctOtp = "1234";
-  //
-  //   if (otpCode == correctOtp) {
-  //     Get.snackbar("Success", "Verification successful!",
-  //         snackPosition: SnackPosition.BOTTOM);
-  //     Get.toNamed(Routes.NEWPASSWORDFORGOTPASSWORD, arguments: email);
-  //   } else {
-  //     Get.snackbar("Error", "Invalid OTP code. Please try again.",
-  //         snackPosition: SnackPosition.BOTTOM);
-  //   }
-  // }
-  // // void verifyOtp(String otpCode) async {
-  // //   const correctOtp = "1234";    final response = await http.post(
-  // //     Uri.parse('http://10.0.2.2:8000/api/verify-otp'),
-  // //     headers: {'Content-Type': 'application/json'},
-  // //     body: jsonEncode({'email': email, 'otp': otpCode}),
-  // //   );
-  // //
-  // //   if (response.statusCode == 200) {
-  // //     Get.snackbar("Success", "Verification successful!",
-  // //         snackPosition: SnackPosition.BOTTOM);
-  // //     Get.toNamed("/reset-password", arguments: email); // Lanjut ke halaman reset password
-  // //   } else {
-  // //     Get.snackbar("Error", "Invalid OTP code. Please try again.",
-  // //         snackPosition: SnackPosition.BOTTOM);
-  // //   }
-  // // }

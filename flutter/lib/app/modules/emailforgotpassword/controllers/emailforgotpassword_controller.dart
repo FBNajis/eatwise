@@ -23,29 +23,10 @@ class EmailforgotpasswordController extends GetxController {
 
       if (response.statusCode == 200) {
         isEmailValid.value = true;
-        try {
-          final otpResponse =
-              await http.post(Uri.parse('http://10.0.2.2:8000/api/send-otp'),
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                  },
-                  body: jsonEncode({'email': email.value}));
+        message.value = "Email ditemukan, OTP telah dikirim ke email.";
 
-          if (otpResponse.statusCode == 200) {
-            Get.snackbar("OTP Sent", "Please check your email");
-            Get.offNamed(Routes.OTPCODE,
-                arguments: {'email': email.value}); // ✅
-          } else {
-            final error = jsonDecode(otpResponse.body);
-            Get.snackbar("Failed", error['message'] ?? "Failed to send OTP");
-          }
-        } catch (e) {
-          Get.snackbar("Error", "Exception: $e");
-        }
-
-        message.value = "Email ditemukan, lanjut ke proses reset password.";
-        Get.toNamed(Routes.OTPFORGOTPASSWORD, arguments: email.value);
+        Get.snackbar("OTP Sent", "Please check your email");
+        Get.toNamed(Routes.OTPFORGOTPASSWORD, arguments: {'email': email.value});
       } else if (response.statusCode == 404) {
         isEmailValid.value = false;
         message.value = "Email tidak ditemukan di sistem kami.";
@@ -60,4 +41,5 @@ class EmailforgotpasswordController extends GetxController {
       isLoading.value = false;
     }
   }
+
 }

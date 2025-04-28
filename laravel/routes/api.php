@@ -14,6 +14,8 @@ Route::middleware('api')->group(function () {
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('/check-email', [AuthController::class, 'checkEmail']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/check-availability', [AuthController::class, 'checkAvailability']);
+
 
     // User routes
     Route::get('/user', [UserController::class, 'getUserProfile']);
@@ -26,10 +28,7 @@ Route::middleware('api')->group(function () {
     Route::get('/recipes/category', [RecipeController::class, 'catRecipes']);
     Route::get('/recipes/budget', [RecipeController::class, 'budRecipes']);
     // Route for searching recipes
-    Route::get('/recipes/search', [RecipeController::class, 'searchRecipes']);
-
-    // Public comment routes
-    Route::get('/recipes/{id}/comments', [RecipeController::class, 'getComments']);
+    Route::get('/recipes/search', [RecipeController::class, 'searchRecipes']); // Add this line
 
     // Authenticated routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -41,16 +40,10 @@ Route::middleware('api')->group(function () {
         // User-specific recipe routes
         Route::get('/user/recipes', [RecipeController::class, 'userRecipes']);
         Route::get('/user/recipes/liked', [RecipeController::class, 'likedRecipes']);
-
-        // Comment routes
-        Route::post('/recipes/{id}/comments', [RecipeController::class, 'addComment']);
         
         // Like/unlike routes
         Route::post('/recipes/{id}/like', [RecipeController::class, 'like']);
         Route::delete('/recipes/{id}/unlike', [RecipeController::class, 'unlike']);
-        Route::get('/recipes/{id}/check-like', [RecipeController::class, 'checkLike']);
         Route::get('/recipes/liked', [RecipeController::class, 'likedRecipes']);
     });
 });
-
-Route::get('/recipes/{id}', [RecipeController::class, 'show']);
