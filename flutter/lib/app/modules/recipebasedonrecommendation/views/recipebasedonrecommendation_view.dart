@@ -46,37 +46,51 @@ class RecipebasedonrecommendationView
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Obx(() {
-          if (controller.isLoading.value) {
-            return Center(child: CircularProgressIndicator());
-          }
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await controller.refreshData();
+          },
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return Center(child: CircularProgressIndicator());
+            }
 
-          if (controller.topRecommendedRecipes.isEmpty) {
-            return Center(child: Text('No recommendations available'));
-          }
-
-          return GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio:
-                  0.76, // Slightly adjusted from 0.8 to fix overflow
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemCount: controller.topRecommendedRecipes.length,
-            itemBuilder: (context, index) {
-              var recipe = controller.topRecommendedRecipes[index];
-              return _buildRecommendationCard(
-                recipe['name'],
-                recipe['creator_name'],
-                recipe['cost_estimation'].toString(),
-                recipe['favorites_count'].toString(),
-                recipe['image_path'],
-                recipe,
+            if (controller.topRecommendedRecipes.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 2.5,
+                    child: Center(
+                        child: Text('No recipes recommendation available')),
+                  ),
+                ],
               );
-            },
-          );
-        }),
+            }
+
+            return GridView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.76,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: controller.topRecommendedRecipes.length,
+              itemBuilder: (context, index) {
+                var recipe = controller.topRecommendedRecipes[index];
+                return _buildRecommendationCard(
+                  recipe['name'],
+                  recipe['creator_name'],
+                  recipe['cost_estimation'].toString(),
+                  recipe['favorites_count'].toString(),
+                  recipe['image_path'],
+                  recipe,
+                );
+              },
+            );
+          }),
+        ),
       ),
     );
   }
