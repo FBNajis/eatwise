@@ -237,7 +237,10 @@ class AddrecipeController extends GetxController {
       ),
       barrierDismissible: false,
     );
-    Future.delayed(Duration(seconds: 2), () => Get.offNamed('/recipe'));
+    Future.delayed(Duration(seconds: 2), () {
+      Get.offAllNamed(
+          '/recipe'); 
+    });
   }
 
   void _showLoadingDialog() {

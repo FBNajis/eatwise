@@ -233,7 +233,10 @@ class EditdeleterecipeController extends GetxController {
       ),
       barrierDismissible: false,
     );
-    Future.delayed(Duration(seconds: 2), () => Get.offNamed('/recipe'));
+    Future.delayed(Duration(seconds: 2), () {
+      Get.offAllNamed(
+          '/recipe'); 
+    });
   }
 
   void _showDeleteSuccessDialog() {
@@ -269,12 +272,9 @@ class EditdeleterecipeController extends GetxController {
       barrierDismissible: false,
     );
 
-    // Navigate to recipe page with a forced reload after a 2-second delay
     Future.delayed(Duration(seconds: 2), () {
       Get.offAllNamed(
-          '/recipe'); // This will remove all previous routes and create a fresh instance
-      // Alternatively, if you want to keep navigation history but still refresh the page:
-      // Get.offNamed('/recipe', preventDuplicates: false);
+          '/recipe'); 
     });
   }
 }
