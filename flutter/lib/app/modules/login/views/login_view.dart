@@ -21,12 +21,7 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xffCE181B), Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.70, 0.30],
-          ),
+          color: Color(0xffCE181B)
         ),
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),

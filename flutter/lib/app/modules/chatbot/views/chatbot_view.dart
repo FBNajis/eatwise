@@ -174,7 +174,7 @@ class ChatbotView extends GetView<ChatbotController> {
                       controller:
                           controller.messageController, // ✅ this is essential!
                       decoration: InputDecoration(
-                        hintText: "Search here",
+                        hintText: "Chat here...",
                         hintStyle: GoogleFonts.poppins(
                             fontSize: 14, fontWeight: FontWeight.w400),
                         border: InputBorder.none,

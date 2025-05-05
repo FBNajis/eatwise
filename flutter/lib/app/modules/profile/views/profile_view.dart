@@ -152,7 +152,7 @@ class _ProfileViewState extends State<ProfileView> {
                   controller: profileController.emailController,
                   keyboardType: TextInputType.emailAddress),
               buildPasswordField(context,
-                  label: "Password",
+                  label: "New Password",
                   controller: profileController.passwordController,
                   obscureText: _obscurePassword, onToggleVisibility: () {
                 setState(() {
@@ -160,7 +160,7 @@ class _ProfileViewState extends State<ProfileView> {
                 });
               }),
               buildPasswordField(context,
-                  label: "Confirm Password",
+                  label: "Confirm New Password",
                   controller: profileController.confirmPasswordController,
                   obscureText: _obscureConfirmPassword, onToggleVisibility: () {
                 setState(() {
