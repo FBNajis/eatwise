@@ -22,14 +22,15 @@ class OtpforgotpasswordController extends GetxController {
 
     print("Arguments in OTP Page: $arguments");
 
-    if (arguments != null && arguments is Map && arguments.containsKey('email')) {
+    if (arguments != null &&
+        arguments is Map &&
+        arguments.containsKey('email')) {
       email = arguments['email'];
       print("Email received: $email");
     } else {
       print("ERROR: Email is null or not provided properly");
     }
   }
-
 
   Future<bool> sendOtp(String email) async {
     isLoading.value = true;
@@ -79,7 +80,8 @@ class OtpforgotpasswordController extends GetxController {
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
         Get.snackbar('Success', data['message'] ?? 'OTP verified successfully');
-        Get.toNamed(Routes.NEWPASSWORDFORGOTPASSWORD, arguments: {'email': email});
+        Get.toNamed(Routes.NEWPASSWORDFORGOTPASSWORD,
+            arguments: {'email': email});
 
         return true;
       } else {
@@ -113,7 +115,8 @@ class OtpforgotpasswordController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar("OTP Sent", "Kode OTP berhasil dikirim ulang ke email Anda.");
+        Get.snackbar(
+            "OTP Sent", "Kode OTP berhasil dikirim ulang ke email Anda.");
       } else {
         final error = jsonDecode(response.body);
         Get.snackbar("Gagal", error['message'] ?? "Gagal mengirim ulang OTP.");
@@ -147,7 +150,4 @@ class OtpforgotpasswordController extends GetxController {
     _countdownTimer?.cancel();
     super.onClose();
   }
-
-
 }
-

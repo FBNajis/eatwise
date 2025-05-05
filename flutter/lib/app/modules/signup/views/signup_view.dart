@@ -50,13 +50,26 @@ class SignupView extends GetView<SignupController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 15),
-                    buildInputField("Username", "Enter username...", controller.usernameController),
-                    buildInputField("Full Name", "Enter your full name...", controller.fullNameController),
-                    buildInputField("Phone Number", "Enter your phone number...", controller.phoneController),
-                    buildInputField("Email", "Enter your email...", controller.emailController),
-                    buildPasswordField("Password", "Enter your password...", controller.passwordController, controller.isPasswordHidden),
-                    buildPasswordField("Confirm Password", "Confirm your password...", controller.confirmPasswordController, controller.isConfirmPasswordHidden),
-
+                    buildInputField("Username", "Enter username...",
+                        controller.usernameController),
+                    buildInputField("Full Name", "Enter your full name...",
+                        controller.fullNameController),
+                    buildInputField(
+                        "Phone Number",
+                        "Enter your phone number...",
+                        controller.phoneController),
+                    buildInputField("Email", "Enter your email...",
+                        controller.emailController),
+                    buildPasswordField(
+                        "Password",
+                        "Enter your password...",
+                        controller.passwordController,
+                        controller.isPasswordHidden),
+                    buildPasswordField(
+                        "Confirm Password",
+                        "Confirm your password...",
+                        controller.confirmPasswordController,
+                        controller.isConfirmPasswordHidden),
                     SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
@@ -85,7 +98,7 @@ class SignupView extends GetView<SignupController> {
                     SizedBox(height: 15),
                     Center(
                       child: GestureDetector(
-                        onTap: () => Get.toNamed(Routes.LOGIN), 
+                        onTap: () => Get.toNamed(Routes.LOGIN),
                         child: Text.rich(
                           TextSpan(
                             text: "Already Have an Account? ",
@@ -114,7 +127,8 @@ class SignupView extends GetView<SignupController> {
     );
   }
 
-  Widget buildInputField(String label, String hint,  TextEditingController controller) {
+  Widget buildInputField(
+      String label, String hint, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -142,41 +156,41 @@ class SignupView extends GetView<SignupController> {
     );
   }
 
-  Widget buildPasswordField(String label, String hint, TextEditingController controller, RxBool isHidden) {
+  Widget buildPasswordField(String label, String hint,
+      TextEditingController controller, RxBool isHidden) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.poppins(fontSize: 15)),
         SizedBox(height: 7),
         Obx(() => TextField(
-          obscureText: isHidden.value,
-          controller: controller,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Color(0xffFFF3F3),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            hintText: hint,
-            hintStyle: GoogleFonts.poppins(
-              fontWeight: FontWeight.w400,
-              color: Colors.grey,
-              fontSize: 14,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                isHidden.value ? Icons.visibility_off : Icons.visibility,
+              obscureText: isHidden.value,
+              controller: controller,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Color(0xffFFF3F3),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                hintText: hint,
+                hintStyle: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isHidden.value ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    isHidden.value = !isHidden.value;
+                  },
+                ),
               ),
-              onPressed: () {
-                isHidden.value = !isHidden.value;
-              },
-            ),
-          ),
-        )),
+            )),
         SizedBox(height: 13),
       ],
     );
   }
-
 }

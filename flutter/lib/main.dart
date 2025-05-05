@@ -5,7 +5,6 @@ import 'package:get_storage/get_storage.dart';
 import 'app/routes/app_pages.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 void main() async {
   await GetStorage.init();
   final box = GetStorage();
@@ -15,6 +14,7 @@ void main() async {
 
   runApp(
     GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: token != null ? Routes.HOME : Routes.ONBOARDING1,
       getPages: AppPages.routes,
     ),

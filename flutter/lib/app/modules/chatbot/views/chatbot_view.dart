@@ -72,7 +72,7 @@ class ChatbotView extends GetView<ChatbotController> {
                           ),
                         ),
                         Text(
-                          "Support Agent",
+                          "Eatwise",
                           style: GoogleFonts.poppins(
                             color: Colors.white70,
                             fontSize: 14,
@@ -117,8 +117,8 @@ class ChatbotView extends GetView<ChatbotController> {
                       children: [
                         Text(
                           isUser
-                              ? "Visitor ${message.timestamp}"
-                              : "LiveChat ${message.timestamp}",
+                              ? "Kamu ${message.timestamp}"
+                              : "Eatwise Bot ${message.timestamp}",
                           style: GoogleFonts.poppins(
                             color: Colors.grey[700],
                             fontSize: 12,
@@ -174,7 +174,7 @@ class ChatbotView extends GetView<ChatbotController> {
                       controller:
                           controller.messageController, // ✅ this is essential!
                       decoration: InputDecoration(
-                        hintText: "Ask anything",
+                        hintText: "Search here",
                         hintStyle: GoogleFonts.poppins(
                             fontSize: 14, fontWeight: FontWeight.w400),
                         border: InputBorder.none,

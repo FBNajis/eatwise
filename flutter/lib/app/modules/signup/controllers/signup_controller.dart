@@ -14,7 +14,6 @@ class SignupController extends GetxController {
   var isPasswordHidden = true.obs;
   var isConfirmPasswordHidden = true.obs;
 
-
   Future<void> signUp() async {
     final username = usernameController.text.trim();
     final fullName = fullNameController.text.trim();
@@ -59,7 +58,8 @@ class SignupController extends GetxController {
 
       if (checkResponse.statusCode != 200) {
         final error = jsonDecode(checkResponse.body);
-        Get.snackbar("Unavailable", error['message'] ?? "Username or Email already taken");
+        Get.snackbar("Unavailable",
+            error['message'] ?? "Username or Email already taken");
         return;
       }
 
@@ -88,7 +88,8 @@ class SignupController extends GetxController {
           'password': password,
         };
 
-        Get.offNamed(Routes.OTPCODE, arguments: {'email': email, 'userData': userData});
+        Get.offNamed(Routes.OTPCODE,
+            arguments: {'email': email, 'userData': userData});
       } else {
         final error = jsonDecode(otpResponse.body);
         Get.snackbar("Failed", error['message'] ?? "Failed to send OTP");
@@ -97,9 +98,6 @@ class SignupController extends GetxController {
       Get.snackbar("Error", "Exception: $e");
     }
   }
-
-
-
 
   @override
   void onClose() {

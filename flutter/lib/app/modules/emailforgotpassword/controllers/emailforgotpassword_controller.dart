@@ -26,7 +26,8 @@ class EmailforgotpasswordController extends GetxController {
         message.value = "Email ditemukan, OTP telah dikirim ke email.";
 
         Get.snackbar("OTP Sent", "Please check your email");
-        Get.toNamed(Routes.OTPFORGOTPASSWORD, arguments: {'email': email.value});
+        Get.toNamed(Routes.OTPFORGOTPASSWORD,
+            arguments: {'email': email.value});
       } else if (response.statusCode == 404) {
         isEmailValid.value = false;
         message.value = "Email tidak ditemukan di sistem kami.";
@@ -41,5 +42,4 @@ class EmailforgotpasswordController extends GetxController {
       isLoading.value = false;
     }
   }
-
 }

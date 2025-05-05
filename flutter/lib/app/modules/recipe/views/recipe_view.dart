@@ -140,7 +140,7 @@ class RecipeView extends GetView<RecipeController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             Text(
               'Create Your Recipe',
               style: GoogleFonts.poppins(
