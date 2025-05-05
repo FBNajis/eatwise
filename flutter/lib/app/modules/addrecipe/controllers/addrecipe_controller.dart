@@ -44,14 +44,32 @@ class AddrecipeController extends GetxController {
   }
 
   Future<void> pickImageFromCamera() async {
-    final image = await picker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 85,
-      maxWidth: 854,
-      maxHeight: 480,
-    );
-    selectedImage.value = image;
-    debugPrint("Gambar diambil dari kamera: ${image?.path}");
+    try {
+      // Gunakan kompres kualitas untuk mengurangi ukuran file
+      final XFile? image = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        imageQuality: 70, // Kompresi kualitas gambar
+        maxWidth: 800,    // Batasi lebar maksimum
+        maxHeight: 800,   // Batasi tinggi maksimum
+      );
+      
+      if (image != null) {
+        // Proses gambar di background untuk menghindari UI freeze
+        await _processImageInBackground(image);
+      }
+    } catch (e) {
+      print('Error saat mengambil gambar: $e');
+      rethrow; // Lempar kembali error untuk ditangani di UI
+    }
+  }
+
+  Future<void> _processImageInBackground(XFile image) async {
+    try {
+      selectedImage.value = image;
+    } catch (e) {
+      print('Error saat memproses gambar: $e');
+      throw e;
+    }
   }
 
   bool validateInputs() {

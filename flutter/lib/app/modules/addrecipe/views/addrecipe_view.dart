@@ -45,7 +45,7 @@ class AddrecipeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        controller.clearForm(); // Bersihkan saat user back
+        controller.clearForm(); 
         return true;
       },
       child: Scaffold(
@@ -56,7 +56,7 @@ class AddrecipeView extends StatelessWidget {
           leading: IconButton(
             icon: Icon(Icons.chevron_left, size: 33),
             onPressed: () {
-              controller.clearForm(); // Bersihkan saat klik tombol back
+              controller.clearForm(); 
               Get.back();
             },
           ),
@@ -212,34 +212,72 @@ class AddrecipeView extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       GestureDetector(
-                        onTap: controller.pickImageFromCamera,
-                        child: Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: controller.selectedImage.value == null
+                        onTap: () async {
+                          try {
+                            // Tampilkan loading indicator
+                            Get.dialog(
+                              Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xffCE181B)),
+                                ),
+                              ),
+                              barrierDismissible: false,
+                            );
+                            
+                            // Panggil fungsi untuk mengambil gambar
+                            await controller.pickImageFromCamera();
+                            
+                            // Tutup dialog loading setelah selesai
+                            Get.back();
+                            } catch (e) {
+                              // Tutup dialog loading jika terjadi error
+                              Get.back();
+                              // Tampilkan pesan error
+                              Get.snackbar('Error', 'Gagal mengambil gambar: ${e.toString()}');
+                            }
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Obx(() => controller.selectedImage.value == null
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Image.asset(
-                                        'assets/images/upload_camera.png',
-                                        height: 43),
+                                      'assets/images/upload_camera.png',
+                                      height: 43,
+                                    ),
                                     SizedBox(height: 8),
-                                    Text("Open Camera",
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 12,
-                                            color: Color(0xffCE181B),
-                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                      "Open Camera",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Color(0xffCE181B),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 )
-                              : Image.file(
-                                  File(controller.selectedImage.value!.path),
-                                  fit: BoxFit.cover),
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(9),
+                                  child: Image.file(
+                                    File(controller.selectedImage.value!.path),
+                                    fit: BoxFit.cover,
+                                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                                      if (wasSynchronouslyLoaded || frame != null) {
+                                        return child;
+                                      }
+                                      return Center(child: CircularProgressIndicator());
+                                    },
+                                  ),
+                                ),
+                            ),
+                          ),
                         ),
-                      ),
                       SizedBox(height: 16),
                       Text("Instructions", style: _labelStyle()),
                       SizedBox(height: 4),
