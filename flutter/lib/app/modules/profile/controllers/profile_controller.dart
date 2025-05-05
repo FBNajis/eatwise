@@ -52,7 +52,7 @@ class ProfileController extends GetxController {
       isLoading.value = true;
 
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/user?email=$email'),
+        Uri.parse('http://10.20.30.228:8000/api/user?email=$email'),
         headers: {
           'Accept': 'application/json',
         },
@@ -97,7 +97,7 @@ class ProfileController extends GetxController {
     try {
       isLoading.value = true;
       final token = box.read('token');
-      var uri = Uri.parse('http://10.0.2.2:8000/api/user/update');
+      var uri = Uri.parse('http://10.20.30.228:8000/api/user/update');
       var request = http.MultipartRequest('POST', uri);
 
       request.headers.addAll({

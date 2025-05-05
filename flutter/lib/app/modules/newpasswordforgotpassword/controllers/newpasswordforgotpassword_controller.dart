@@ -76,7 +76,7 @@ class NewpasswordforgotpasswordController extends GetxController {
     try {
       isLoading.value = true;
 
-      final url = Uri.parse('http://10.0.2.2:8000/api/reset-password');
+      final url = Uri.parse('http://10.20.30.228:8000/api/reset-password');
       final response = await http.post(
         url,
         headers: {

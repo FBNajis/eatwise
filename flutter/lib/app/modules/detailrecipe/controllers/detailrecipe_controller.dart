@@ -74,7 +74,7 @@ class CommentModel {
     if (imagePath != null &&
         imagePath.isNotEmpty &&
         !imagePath.startsWith('http')) {
-      imagePath = 'http://10.0.2.2:8000/storage/$imagePath';
+      imagePath = 'http://10.20.30.228:8000/storage/$imagePath';
     }
 
     return CommentModel(
@@ -89,7 +89,7 @@ class CommentModel {
 
 class DetailrecipeController extends GetxController {
   late int recipeId;
-  final baseUrl = 'http://10.0.2.2:8000/api';
+  final baseUrl = 'http://10.20.30.228:8000/api';
   final isLoading = true.obs;
   final isCommentsLoading = true.obs;
   final recipe = Rx<RecipeModel?>(null);

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class RecipebasedonrecommendationController extends GetxController {
   final topRecommendedRecipes = <dynamic>[].obs;
   final isLoading = false.obs;
-  final String baseUrl = 'http://10.0.2.2:8000/api';
+  final String baseUrl = 'http://10.20.30.228:8000/api';
 
   void fetchTopRecommendedRecipes() async {
     try {

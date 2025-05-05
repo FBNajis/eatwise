@@ -25,7 +25,7 @@ class _LoginViewState extends State<LoginView> {
             colors: [Color(0xffCE181B), Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            stops: [0.75, 0.25],
+            stops: [0.50, 0.50],
           ),
         ),
         child: GestureDetector(

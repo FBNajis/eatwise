@@ -35,7 +35,7 @@ class OtpforgotpasswordController extends GetxController {
   Future<bool> sendOtp(String email) async {
     isLoading.value = true;
 
-    final url = Uri.parse('http://10.0.2.2:8000/api/send-otp');
+    final url = Uri.parse('http://10.20.30.228:8000/api/send-otp');
     try {
       final response = await http.post(
         url,
@@ -69,7 +69,7 @@ class OtpforgotpasswordController extends GetxController {
     print("Calling verifyOtp with OTP: $otpCode and email: $email");
     isLoading.value = true;
 
-    final url = Uri.parse('http://10.0.2.2:8000/api/verify-otp');
+    final url = Uri.parse('http://10.20.30.228:8000/api/verify-otp');
     try {
       final response = await http.post(
         url,
@@ -106,7 +106,7 @@ class OtpforgotpasswordController extends GetxController {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/send-otp'),
+        Uri.parse('http://10.20.30.228:8000/api/send-otp'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

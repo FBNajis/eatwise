@@ -45,7 +45,7 @@ class SignupController extends GetxController {
     try {
       // 1. Check username and email availability
       final checkResponse = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/check-availability'),
+        Uri.parse('http://10.20.30.228:8000/api/check-availability'),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ class SignupController extends GetxController {
 
       // 2. Send OTP
       final otpResponse = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/send-otp'),
+        Uri.parse('http://10.20.30.228:8000/api/send-otp'),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
