@@ -49,10 +49,10 @@ class AddrecipeController extends GetxController {
       final XFile? image = await ImagePicker().pickImage(
         source: ImageSource.camera,
         imageQuality: 70, // Kompresi kualitas gambar
-        maxWidth: 800,    // Batasi lebar maksimum
-        maxHeight: 800,   // Batasi tinggi maksimum
+        maxWidth: 800, // Batasi lebar maksimum
+        maxHeight: 800, // Batasi tinggi maksimum
       );
-      
+
       if (image != null) {
         // Proses gambar di background untuk menghindari UI freeze
         await _processImageInBackground(image);
@@ -115,7 +115,7 @@ class AddrecipeController extends GetxController {
         return;
       }
 
-      final uri = Uri.parse('http://10.20.30.228:8000/api/recipes');
+      final uri = Uri.parse('http://192.168.27.30:8000/api/recipes');
 
       final recipeData = {
         'name': dishNameController.text.trim(),
@@ -238,8 +238,7 @@ class AddrecipeController extends GetxController {
       barrierDismissible: false,
     );
     Future.delayed(Duration(seconds: 2), () {
-      Get.offAllNamed(
-          '/recipe'); 
+      Get.offAllNamed('/recipe');
     });
   }
 

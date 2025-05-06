@@ -18,14 +18,10 @@ class SignupView extends GetView<SignupController> {
           child: Column(
             children: [
               SizedBox(height: 50),
-              Text(
-                "foodie",
-                style: GoogleFonts.poppins(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              Image.asset(
+                  'assets/images/eatwiselogo.png',
+                  height: 60,
                 ),
-              ),
               SizedBox(height: 13),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),

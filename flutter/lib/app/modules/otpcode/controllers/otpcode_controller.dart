@@ -30,7 +30,7 @@ class OtpcodeController extends GetxController {
     isLoading.value = true;
 
     final url = Uri.parse(
-        'http://10.20.30.228:8000/api/send-otp'); // Ganti sesuai URL backend kamu
+        'http://192.168.27.30:8000/api/send-otp'); // Ganti sesuai URL backend kamu
     try {
       final response = await http.post(
         url,
@@ -64,7 +64,7 @@ class OtpcodeController extends GetxController {
     print("Calling verifyOtp with OTP: $otpCode and email: $email");
     isLoading.value = true;
 
-    final url = Uri.parse('http://10.20.30.228:8000/api/verify-otp');
+    final url = Uri.parse('http://192.168.27.30:8000/api/verify-otp');
     try {
       final response = await http.post(
         url,
@@ -77,7 +77,7 @@ class OtpcodeController extends GetxController {
         final userData = Get.arguments['userData'];
 
         final signupResponse = await http.post(
-          Uri.parse('http://10.20.30.228:8000/api/signup'),
+          Uri.parse('http://192.168.27.30:8000/api/signup'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(userData),
         );
@@ -114,7 +114,7 @@ class OtpcodeController extends GetxController {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.20.30.228:8000/api/send-otp'),
+        Uri.parse('http://192.168.27.30:8000/api/send-otp'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

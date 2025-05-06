@@ -92,7 +92,7 @@ class EditdeleterecipeController extends GetxController {
       return;
     }
 
-    final uri = Uri.parse('http://10.20.30.228:8000/api/recipes/$recipeId');
+    final uri = Uri.parse('http://192.168.27.30:8000/api/recipes/$recipeId');
     final recipeData = {
       'name': dishNameController.text.trim(),
       'description': descriptionController.text.trim(),
@@ -163,7 +163,7 @@ class EditdeleterecipeController extends GetxController {
     }
 
     isLoading.value = true;
-    final uri = Uri.parse('http://10.20.30.228:8000/api/recipes/$recipeId');
+    final uri = Uri.parse('http://192.168.27.30:8000/api/recipes/$recipeId');
 
     try {
       final response = await http.delete(uri, headers: {
@@ -234,8 +234,7 @@ class EditdeleterecipeController extends GetxController {
       barrierDismissible: false,
     );
     Future.delayed(Duration(seconds: 2), () {
-      Get.offAllNamed(
-          '/recipe'); 
+      Get.offAllNamed('/recipe');
     });
   }
 
@@ -273,8 +272,7 @@ class EditdeleterecipeController extends GetxController {
     );
 
     Future.delayed(Duration(seconds: 2), () {
-      Get.offAllNamed(
-          '/recipe'); 
+      Get.offAllNamed('/recipe');
     });
   }
 }

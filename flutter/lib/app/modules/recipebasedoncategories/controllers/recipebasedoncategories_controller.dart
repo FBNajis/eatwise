@@ -7,7 +7,7 @@ class RecipebasedoncategoriesController extends GetxController {
   final recipesByCategories = <dynamic>[].obs;
   final isLoading = false.obs;
   final category = ''.obs;
-  final String baseUrl = 'http://10.20.30.228:8000/api';
+  final String baseUrl = 'http://192.168.27.30:8000/api';
 
   @override
   void onInit() {

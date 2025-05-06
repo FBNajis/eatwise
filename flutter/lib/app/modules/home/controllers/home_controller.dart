@@ -15,7 +15,7 @@ class HomeController extends GetxController {
 
   final searchController = TextEditingController();
 
-  final String baseUrl = 'http://10.20.30.228:8000/api';
+  final String baseUrl = 'http://192.168.27.30:8000/api';
 
   @override
   void onInit() {

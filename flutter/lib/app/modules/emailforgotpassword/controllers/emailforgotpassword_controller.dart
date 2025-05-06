@@ -13,7 +13,7 @@ class EmailforgotpasswordController extends GetxController {
   Future<void> checkEmail() async {
     isLoading.value = true;
 
-    final url = Uri.parse('http://10.20.30.228:8000/api/check-email');
+    final url = Uri.parse('http://192.168.27.30:8000/api/check-email');
     try {
       final response = await http.post(
         url,
