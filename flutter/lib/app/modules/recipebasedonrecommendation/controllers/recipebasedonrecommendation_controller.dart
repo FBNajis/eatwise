@@ -39,4 +39,13 @@ class RecipebasedonrecommendationController extends GetxController {
       isLoading(false);
     }
   }
+
+  Future<void> refreshData() async {
+    isLoading(true);
+    try {
+      fetchTopRecommendedRecipes();
+    } finally {
+      isLoading(false);
+    }
+  }
 }
