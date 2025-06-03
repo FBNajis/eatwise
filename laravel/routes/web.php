@@ -7,13 +7,13 @@ Route::get('/', function () {
 });
 Route::get('/signup', function () {
     return view('signup');
-});
+})->name('signup');
 Route::get('/login', function () {
     return view('login');
-});
+})->name('login');
 Route::get('/forgotpassword_fillemail', function () {
     return view('forgotpassword_fillemail');
-});
+})->name('forgotpassword_fillemail');
 Route::get('/forgotpassword_fillotp', function () {
     return view('forgotpassword_fillotp');
 });
@@ -29,18 +29,16 @@ Route::get('/profile', function () {
 Route::get('/sidebar', function () {
     return view('sidebar');
 });
-Route::get('/home', function () {
-    return view('home');
-});
+
 Route::get('/chatbot', function () {
     return view('chatbot');
 });
 Route::get('/recipe', function () {
     return view('recipe');
 });
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
+Route::get('/homepage', function () {
+    return view('homepage');
+})->name('homepage');
 
 Route::get('/recipe', function () {
     return view('recipe');
@@ -59,4 +57,16 @@ Route::get('/sidebar', function () {
 });
 Route::get('/detailrecipe', function () {
     return view('detailrecipe');
+});
+Route::get('/recommendation', function () {
+    return view('recommendation');
+})->name('recommendation');
+Route::get('/filter', function () {
+    return view('filter');
+});
+Route::get('/addrecipe', function () {
+    return view('addrecipe');
+});
+Route::get('/editrecipe', function () {
+    return view('editrecipe');
 });

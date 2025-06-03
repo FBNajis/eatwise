@@ -648,7 +648,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="send-btn">Send</button>
+                    <button type="submit" class="send-btn" onclick="window.location.href='/login'">Send</button>
                 </form>
             </div>
         </div>

@@ -4,9 +4,9 @@
         eatwise
     </div>
     
-    <a href="{{ route('home') }}" class="menu-item explore {{ request()->routeIs('home') ? 'active' : '' }}">
+    <a href="{{ route('homepage') }}" class="menu-item explore {{ request()->routeIs('homepage') ? 'active' : '' }}">
         <img src="{{ asset('images/explore_red.png') }}" alt="Explore" class="icon-red">
-        <img src="{{ asset('images/explore_grey.png') }}" alt="Explore" class="icon-white">
+        <img src="{{ asset('images/explore_white.png') }}" alt="Explore" class="icon-white">
         <span>Explore</span>
     </a>
     

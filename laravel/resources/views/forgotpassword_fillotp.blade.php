@@ -510,7 +510,7 @@
                         If you didn't receive a code, <a href="#" class="resend-link">Resend</a>
                     </div>
 
-                    <button type="submit" class="send-btn">Send</button>
+                    <button type="submit" class="send-btn" onclick="window.location.href='/forgotpassword_fillpassword'">Send</button>
                 </form>
             </div>
         </div>

@@ -557,13 +557,12 @@
                             <input type="checkbox" id="remember">
                             <label for="remember">Ingat saya</label>
                         </div>
-                        <a href="#" class="forgot-password">Forgot Password?</a>
+                        <a href="{{ route('forgotpassword_fillemail') }}" class="forgot-password">Forgot Password?</a>
                     </div>
-
-                    <button type="submit" class="login-btn">Login</button>
+                    <button type="button" class="login-btn" onclick="window.location.href='/homepage'">Login</button>
 
                     <div class="signup-link">
-                        Don't have an account yet? <a href="#">Sign Up</a>
+                        Don't have an account yet? <a href="{{ route('signup') }}">Sign Up</a>
                     </div>
                 </form>
             </div>

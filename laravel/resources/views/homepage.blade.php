@@ -94,7 +94,7 @@ body {
 
 .header {
   position: relative;
-  background-image: url("{{ asset('images/banner.png') }}");
+  background-image: url("{{ asset('images/banner2.png') }}");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -176,10 +176,21 @@ body {
 
 .category {
   background: #ffe9e9;
-  padding: 15px 20px;
+  padding: 25px 30px;
   border-radius: 15px;
-  font-size: 16px;
+  font-size: 18px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.category img {
+  width: 50px;
+  height: 50px;
 }
 
 .recommendation {
@@ -223,6 +234,13 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   overflow: hidden;
   background: white;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
 .card img {
@@ -331,12 +349,9 @@ body {
       <div class="header-wrapper">
         <header class="header">
           <div>
-            <h1>Create Your Recipe</h1>
-            <p>Create and share your delicious recipes with ease.</p>
-          <button class="create-btn" onclick="window.location.href='/addrecipe'">
-            <img src="{{ asset('images/plus.png') }}" alt="Plus Icon" />
-            <span>Create Recipe</span>
-          </button>
+            <h1>Hello, Anila! 👋</h1>
+            <p>Unleash Your Culinary Creativity and Start Cooking Today!</p>
+
           </div>
         <div class="header-img">
           <img src="{{ asset('images/cookie.png') }}" alt="Food Banner" />
@@ -351,10 +366,45 @@ body {
         </div>
       </div>
 
+      <div class="categories">
+        <div class="category">
+          <img src="{{ asset('images/snack.png') }}" alt="Snack" />
+          <span>Snack</span>
+        </div>
+        <div class="category">
+          <img src="{{ asset('images/drink.png') }}" alt="Drink" />
+          <span>Drink</span>
+        </div>
+        <div class="category">
+          <img src="{{ asset('images/dessert.png') }}" alt="Dessert" />
+          <span>Dessert</span>
+        </div>
+        <div class="category">
+          <img src="{{ asset('images/rice.png') }}" alt="Rice" />
+          <span>Rice</span>
+        </div>
+        <div class="category">
+          <img src="{{ asset('images/seafood.png') }}" alt="Sea Food" />
+          <span>Sea Food</span>
+        </div>
+        <div class="category">
+          <img src="{{ asset('images/salad.png') }}" alt="Salad" />
+          <span>Salad</span>
+        </div>
+        <div class="category">
+          <img src="{{ asset('images/bread.png') }}" alt="Bread" />
+          <span>Bread</span>
+        </div>
+        <div class="category">
+          <img src="{{ asset('images/noodle.png') }}" alt="Noodle" />
+          <span>Noodle</span>
+        </div>
+      </div>
+
       <section class="recommendation">
         <div class="section-header">
-          <h2>Tuesday, 22 March 2025</h2>
-          <a href="#">View All</a>
+          <h2>Recommendation</h2>
+          <a href="{{ route('recommendation') }}">View All</a>
         </div>
 
         <div class="card-list">
@@ -387,43 +437,6 @@ body {
           </div>
         </div>
 
-        <div class="section-header" style="margin-top: 40px;">
-          <h2>Tuesday, 22 March 2025</h2>
-          <a href="#">View All</a>
-        </div>
-
-        <div class="card-list">
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" />
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sate Ayam Pak Slamet</h4>
-            <p class="info">
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sempolan Ayam Giling</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Bakso Daging Ayam</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
 
   <script>
     // Display current date and time

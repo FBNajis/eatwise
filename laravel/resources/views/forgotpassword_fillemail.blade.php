@@ -526,7 +526,7 @@
                     </div>
 
 
-                    <button type="submit" class="send-btn">Send</button>
+                    <button type="submit" class="send-btn" onclick="window.location.href='/forgotpassword_fillotp'">Send</button>
 
                 </form>
             </div>

@@ -567,10 +567,10 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="signup-btn">Sign Up</button>
+                    <button type="submit" class="signup-btn" onclick="window.location.href='/login'">Sign Up</button>
 
                     <div class="signup-link">
-                        Already Have Account? <a href="#">Login</a>
+                        Already Have Account? <a href="{{ route('login') }}">Login</a>
                     </div>
                 </form>
             </div>

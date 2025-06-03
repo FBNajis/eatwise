@@ -7,18 +7,13 @@
 
     /* Main Content */
     .main-content {
-        margin-left: 280px; /* Increased margin to account for sidebar */
+        margin-left: 280px; /* Back to original value that works */
         min-height: 100vh;
-        transition: margin-left 0.3s ease;
         display: flex;
         flex-direction: column;
         background: #f8f9fa;
         padding-right: 0px; /* Removed right padding to expand to edge */
         position: relative;
-    }
-
-    .main-content.expanded {
-        margin-left: 20px; /* Still maintain some left margin when expanded */
     }
 
     /* Chat Header */
@@ -264,12 +259,8 @@
     /* Mobile Responsive */
     @media (max-width: 768px) {
         .main-content {
-            margin-left: 0;
+            margin-left: 0; /* Back to original for mobile */
             padding-right: 0;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
         }
 
         .chat-container {
@@ -295,11 +286,7 @@
     /* Tablet Responsive */
     @media (max-width: 1024px) and (min-width: 769px) {
         .main-content {
-            margin-left: 260px;
-        }
-
-        .main-content.expanded {
-            margin-left: 10px;
+            margin-left: 280px; /* Back to original */
         }
     }
 
@@ -322,7 +309,7 @@
     /* Ensure proper spacing and no overlap */
     .chat-wrapper {
         width: 100%;
-        max-width: calc(100vw - 300px);
+        max-width: calc(100vw - 300px); /* Back to original value */
         display: flex;
         flex-direction: column;
         min-height: 100vh;
@@ -330,12 +317,12 @@
 
     @media (max-width: 768px) {
         .chat-wrapper {
-            max-width: 100vw;
+            max-width: 100vw; /* Back to original for mobile */
         }
     }
 </style>
 
-@include('components.sidebar')
+@include('components.sidebar')                                                                  
 
 <!-- Main Content -->
 <div class="main-content" id="mainContent">
@@ -449,50 +436,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const hamburger = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
     const sendButton = document.getElementById('sendButton');
     const messageInput = document.getElementById('messageInput');
     const chatContainer = document.getElementById('chatContainer');
     
-    // Sidebar toggle functionality
-    if (hamburger) {
-        hamburger.addEventListener('click', function() {
-            sidebar.classList.toggle('closed');
-            if (mainContent) {
-                mainContent.classList.toggle('expanded');
-            }
-        });
-    }
-    
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(event) {
-        if (window.innerWidth <= 768) {
-            if (!sidebar.contains(event.target) && hamburger && !hamburger.contains(event.target)) {
-                sidebar.classList.add('closed');
-                if (mainContent) {
-                    mainContent.classList.add('expanded');
-                }
-            }
-        }
-    });
-    
-    // Handle window resize
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('closed');
-            if (mainContent) {
-                mainContent.classList.remove('expanded');
-            }
-        } else {
-            sidebar.classList.add('closed');
-            if (mainContent) {
-                mainContent.classList.add('expanded');
-            }
-        }
-    });
-
     // Send message functionality
     function sendMessage() {
         const message = messageInput.value.trim();
