@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatWise - Enter Verification Code</title>
+    <title>EatWise - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -307,7 +307,7 @@
             background: white;
         }
 
-        /* Right Section - Verification Form */
+        /* Right Section - Login Form */
         .right-section {
             width: 55%;
             display: flex;
@@ -317,7 +317,7 @@
             padding: 40px;
         }
 
-        .verification-form {
+        .login-form {
             width: 100%;
             max-width: 450px;
             padding: 20px;
@@ -325,12 +325,12 @@
 
         .form-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         .wave-emoji {
             font-size: 48px;
-            margin-bottom: 20px;
+            margin-bottom: 2px;
             display: block;
         }
 
@@ -347,48 +347,79 @@
             line-height: 1.5;
         }
 
-        .code-input-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 40px 0;
+        .form-group {
+            margin-bottom: 13px;
         }
 
-        .code-input {
-            width: 60px;
-            height: 60px;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
             border: 2px solid #e5e7eb;
-            border-radius: 30px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 600;
-            background: white;
+            border-radius: 10px;
+            font-size: 14px;
             transition: border-color 0.3s;
+            background: #f9fafb;
         }
 
-        .code-input:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #dc2626;
         }
 
-        .resend-text {
-            text-align: center;
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
             font-size: 14px;
-            color: #666;
         }
 
-        .resend-link {
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+        }
+
+        .forgot-password {
             color: #dc2626;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
         }
 
-        .resend-link:hover {
+        .forgot-password:hover {
             text-decoration: underline;
         }
 
-        .send-btn {
+        .signup-btn {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #dc2626, #b91c1c);
@@ -399,11 +430,27 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
         }
 
-        .send-btn:hover {
+        .login-btn:hover {
             transform: translateY(-2px);
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .signup-link a {
+            color: #dc2626;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 768px) {
@@ -423,18 +470,8 @@
                 height: 60vh;
             }
             
-            .verification-form {
+            .login-form {
                 padding: 30px;
-            }
-
-            .code-input-container {
-                gap: 10px;
-            }
-
-            .code-input {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
             }
         }
     </style>
@@ -454,7 +491,7 @@
                         <img src="{{ asset('images/noodle.png') }}" alt="Recipe Illustration" style="width: 250px; height: 220px">
                     </div>
                     <div class="content-text">
-                        <h2>It's Time to Get Amazing Cooking!</h2>
+                        <h2>It’s Time to Get Amazing Cooking!</h2>
                         <p>Start your culinary adventure with Eatwise and enjoy meals that make you feel good.</p>
                     </div>
                 </div>
@@ -477,7 +514,7 @@
                     </div>
                     <div class="content-text">
                         <h2>Find Recipes Based on What You Have</h2>
-                        <p>Simply enter the ingredients you have, and we'll suggest delicious meals that fit your budget.</p>
+                        <p>Simply enter the ingredients you have, and we’ll suggest delicious meals that fit your budget.</p>
                     </div>
                 </div>
             </div>
@@ -491,26 +528,50 @@
 
         <!-- Right Section -->
         <div class="right-section">
-            <div class="verification-form">
+            <div class="login-form">
                 <div class="form-header">
-                    <span class="wave-emoji">👋</span>
-                    <h1>Enter Verification Code</h1>
-                    <p>Please enter code verification from your email</p>
+                    <h1>Let’s to Signup!</h1>
+                    <p>Please provide your information to personalize your experience and start exploring the full potential of the app</p>
                 </div>
 
                 <form>
-                    <div class="code-input-container">
-                        <input type="text" class="code-input" maxlength="1" value="2">
-                        <input type="text" class="code-input" maxlength="1" value="1">
-                        <input type="text" class="code-input" maxlength="1" value="6">
-                        <input type="text" class="code-input" maxlength="1" value="7">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="username" id="username" placeholder="Enter your username..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="phone" id="phone" placeholder="Enter your phone number..." required>
                     </div>
 
-                    <div class="resend-text">
-                        If you didn't receive a code, <a href="#" class="resend-link">Resend</a>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-container" style="position: relative;">
+                            <input type="password" id="password" placeholder="Enter your password..." required>
+                            <span class="password-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                                <i class="fa fa-eye" id="eyeIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Confirm Password</label>
+                        <div class="input-container" style="position: relative;">
+                            <input type="password" id="password" placeholder="Enter your confirm password..." required>
+                            <span class="password-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                                <i class="fa fa-eye" id="eyeIcon"></i>
+                            </span>
+                        </div>
                     </div>
 
-                    <button type="submit" class="send-btn">Send</button>
+                    <button type="submit" class="signup-btn">Sign Up</button>
+
+                    <div class="signup-link">
+                        Already Have Account? <a href="#">Login</a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -555,57 +616,25 @@
             });
         });
 
-        // Code input functionality
-        const codeInputs = document.querySelectorAll('.code-input');
-        
-        codeInputs.forEach((input, index) => {
-            input.addEventListener('input', function(e) {
-                const value = e.target.value;
-                
-                // Only allow numbers
-                if (!/^\d*$/.test(value)) {
-                    e.target.value = '';
-                    return;
-                }
-                
-                // Move to next input if current is filled
-                if (value.length === 1 && index < codeInputs.length - 1) {
-                    codeInputs[index + 1].focus();
-                }
-            });
-            
-            input.addEventListener('keydown', function(e) {
-                // Move to previous input on backspace
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    codeInputs[index - 1].focus();
-                }
-            });
-            
-            // Clear default values on focus for better UX
-            input.addEventListener('focus', function(e) {
-                e.target.select();
-            });
-        });
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
 
         // Form submission handler
         document.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // Get all code values
-            const code = Array.from(codeInputs).map(input => input.value).join('');
-            
-            if (code.length !== 4) {
-                alert('Please enter the complete 4-digit verification code.');
-                return;
-            }
-            
-            alert(`Verification code entered: ${code}\nVerification functionality would be implemented here!`);
-        });
-
-        // Resend link handler
-        document.querySelector('.resend-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Resend code functionality would be implemented here!');
+            alert('Login functionality would be implemented here!');
         });
     </script>
 </body>
