@@ -297,19 +297,12 @@
         .popup-content {
             background: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 40px;
             text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        .popup-image {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
-            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIiBmaWxsPSIjRkZEQjAwIi8+CjxwYXRoIGQ9Ik00NS41IDQ1QzQ1LjUgNDEuNjg2MyA0OC4xODYzIDM5IDUxLjUgMzlINjguNUM3MS44MTM3IDM5IDc0LjUgNDEuNjg2MyA3NC41IDQ1VjUxQzc0LjUgNTQuMzEzNyA3MS44MTM3IDU3IDY4LjUgNTdINTEuNUM0OC4xODYzIDU3IDQ1LjUgNTQuMzEzNyA0NS41IDUxVjQ1WiIgZmlsbD0iIzMzMzMzMyIvPgo8cGF0aCBkPSJNMzMgNzJDMzMgNjguNjg2MyAzNS42ODYzIDY2IDM5IDY2SDgxQzg0LjMxMzcgNjYgODcgNjguNjg2MyA4NyA3MlY3OEM4NyA4MS4zMTM3IDg0LjMxMzcgODQgODEgODRIMzlDMzUuNjg2MyA4NCAzMyA4MS4zMTM3IDMzIDc4VjcyWiIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSI0NSIgY3k9IjMwIiByPSI2IiBmaWxsPSIjMzMzMzMzIi8+CjxjaXJjbGUgY3g9IjYwIiBjeT0iMjQiIHI9IjMiIGZpbGw9IiMzMzMzMzMiLz4KPGNpcmNsZSBjeD0iNzUiIGN5PSIzMCIgcj0iNiIgZmlsbD0iIzMzMzMzMyIvPgo8L3N2Zz4K') no-repeat center;
-            background-size: contain;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: popupSlideIn 0.3s ease-out;
         }
         
         .popup-title {
@@ -466,7 +459,7 @@
     <!-- Confirmation Popup -->
     <div class="popup-overlay" id="confirmationPopup">
         <div class="popup-content">
-            <div class="popup-image"></div>
+            <div class="popup-image"><img src="{{ asset('images/popup.png') }}" alt="Pop up image" style="width: 350px; height: 300px"> </div>
             <div class="popup-title">Are you sure you want to exit the application?</div>
             <div class="popup-message">Your changes will be saved.</div>
             <div class="popup-buttons">

@@ -419,7 +419,7 @@
             text-decoration: underline;
         }
 
-        .login-btn {
+        .send-btn {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #dc2626, #b91c1c);
@@ -433,7 +433,7 @@
             margin-bottom: 25px;
         }
 
-        .login-btn:hover {
+        .send-btn:hover {
             transform: translateY(-2px);
         }
 
@@ -451,6 +451,98 @@
 
         .signup-link a:hover {
             text-decoration: underline;
+        }
+
+        /* Success Popup Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-overlay.show {
+            display: flex;
+        }
+
+        .popup-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: popupSlideIn 0.3s ease-out;
+        }
+
+        @keyframes popupSlideIn {
+            from {
+                transform: scale(0.7) translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .trophy-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .popup-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .popup-text {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            animation: confetti-fall 3s ease-out infinite;
+        }
+
+        .confetti:nth-child(1) { left: 10%; animation-delay: 0s; background: #ff6b6b; }
+        .confetti:nth-child(2) { left: 20%; animation-delay: 0.2s; background: #4ecdc4; }
+        .confetti:nth-child(3) { left: 30%; animation-delay: 0.4s; background: #45b7d1; }
+        .confetti:nth-child(4) { left: 40%; animation-delay: 0.6s; background: #96ceb4; }
+        .confetti:nth-child(5) { left: 50%; animation-delay: 0.8s; background: #feca57; }
+        .confetti:nth-child(6) { left: 60%; animation-delay: 1s; background: #ff9ff3; }
+        .confetti:nth-child(7) { left: 70%; animation-delay: 1.2s; background: #54a0ff; }
+        .confetti:nth-child(8) { left: 80%; animation-delay: 1.4s; background: #5f27cd; }
+        .confetti:nth-child(9) { left: 90%; animation-delay: 1.6s; background: #00d2d3; }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
         }
 
         @media (max-width: 768px) {
@@ -491,7 +583,7 @@
                         <img src="{{ asset('images/noodle.png') }}" alt="Recipe Illustration" style="width: 250px; height: 220px">
                     </div>
                     <div class="content-text">
-                        <h2>It’s Time to Get Amazing Cooking!</h2>
+                        <h2>It's Time to Get Amazing Cooking!</h2>
                         <p>Start your culinary adventure with Eatwise and enjoy meals that make you feel good.</p>
                     </div>
                 </div>
@@ -514,7 +606,7 @@
                     </div>
                     <div class="content-text">
                         <h2>Find Recipes Based on What You Have</h2>
-                        <p>Simply enter the ingredients you have, and we’ll suggest delicious meals that fit your budget.</p>
+                        <p>Simply enter the ingredients you have, and we'll suggest delicious meals that fit your budget.</p>
                     </div>
                 </div>
             </div>
@@ -535,33 +627,54 @@
                     <p>Please enter your new password</p>
                 </div>
 
-                <form>
+                <form id="resetPasswordForm">
                     <div class="form-group">
                         <label for="password">New Password</label>
-                        <div class="input-container" style="position: relative;">
+                        <div class="input-container">
                             <input type="password" id="password" placeholder="Enter your new password..." required>
-                            <span class="password-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
-                                <i class="fa fa-eye" id="eyeIcon"></i>
+                            <span class="password-toggle" onclick="togglePassword('password', this)">
+                                <i class="fa fa-eye"></i>
                             </span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="password">Confirm Password</label>
-                        <div class="input-container" style="position: relative;">
-                            <input type="password" id="password" placeholder="Enter your confirm password..." required>
-                            <span class="password-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
-                                <i class="fa fa-eye" id="eyeIcon"></i>
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-container">
+                            <input type="password" id="confirmPassword" placeholder="Enter your confirm password..." required>
+                            <span class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                                <i class="fa fa-eye"></i>
                             </span>
                         </div>
                     </div>
 
-
-                    <button type="submit" class="login-btn">Send</button>
-
-                    <
+                    <button type="submit" class="send-btn">Send</button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div class="popup-overlay" id="successPopup">
+        <div class="popup-content">
+            <!-- Confetti Elements -->
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            
+            <div class="popup-image"><img src="{{ asset('images/popup1.png') }}" alt="Pop up image" style="width: 250px; height: 250px"> </div>
+            <h2 class="popup-title">Password Set Successfully!</h2>
+            <p class="popup-text">
+                Your password has been changed successfully. For security reasons, 
+                please sign in again using your new credentials to continue accessing 
+                your account.
+            </p>
         </div>
     </div>
 
@@ -604,9 +717,9 @@
             });
         });
 
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
+        function togglePassword(inputId, toggleElement) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = toggleElement.querySelector('i');
 
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
@@ -620,10 +733,41 @@
         }
 
         // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Login functionality would be implemented here!');
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Basic validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long!');
+                return;
+            }
+            
+            // Show success popup
+            showSuccessPopup();
         });
+
+        function showSuccessPopup() {
+            const popup = document.getElementById('successPopup');
+            popup.classList.add('show');
+            
+            // Hide popup after 4 seconds and redirect to login
+            setTimeout(() => {
+                popup.classList.remove('show');
+                // Redirect to login page after popup disappears
+                setTimeout(() => {
+                    // Replace 'login.html' with your actual login page URL
+                    window.location.href = 'login.html';
+                }, 300); // Small delay for smooth transition
+            }, 4000);
+        }
     </script>
 </body>
 </html>
