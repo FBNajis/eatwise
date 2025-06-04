@@ -530,6 +530,12 @@
         <div class="right-section">
             <!-- Ganti bagian <form> dengan id agar mudah diakses -->
             <form id="loginForm">
+                <div class="form-header">
+                    <span class="wave-emoji">👋</span>
+                    <h1>Let's Login!</h1>
+                    <p>Please provide your information to personalize your experience and start exploring the full potential of the app</p>
+                </div>
+
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" placeholder="Enter your email..." required>

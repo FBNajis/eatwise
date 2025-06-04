@@ -22,6 +22,7 @@ body {
 
 .container {
   display: flex;
+  background-color: #fff;
 }
 
 .sidebar {
@@ -367,7 +368,7 @@ body {
 
 /* === CSS FILTER === */
 body {
-  background: #f9f9f9;
+  background: #ffffff;
 }
 
 .sidebar {
@@ -545,68 +546,103 @@ select {
   color: #555;
   font-size: 14px;
 }
+
+.error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+    .custom-file-drop {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      color: #999;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .custom-file-drop img {
+      width: 32px;
+      margin-bottom: 10px;
+    }
+    .custom-file-drop.hover {
+      background-color: #f8f8f8;
+    }
+    .custom-file-drop strong {
+      color: red;
+    }
 </style>
 </head>
 <body>
-    @include('components.sidebar')
+  @include('components.sidebar')
   <div class="container">
 
     <!-- Main Content -->
     <main class="main-content">
       <h2 style="text-align: center; margin-bottom: 30px;">Add Recipe</h2>
 
-      <form class="edit-form" id="addRecipeForm" style="max-width: 600px; margin: 0 auto;">
+      <form class="edit-form" id="addRecipeForm" style="max-width: 600px; margin: 0 auto;" enctype="multipart/form-data">
         <div class="form-group">
           <label>Dish Name</label>
-          <input type="text" placeholder="Insert the name of the dish..." required />
+          <input type="text" name="name" placeholder="Insert the name of the dish..." required />
+          <div class="error-message" id="error-name"></div>
         </div>
 
         <div class="form-group">
           <label>Food Description</label>
-          <textarea rows="3" placeholder="Insert a brief description of the dish..." required></textarea>
+          <textarea name="description" rows="3" placeholder="Insert a brief description..." required></textarea>
+          <div class="error-message" id="error-description"></div>
         </div>
 
         <div class="form-group">
           <label>Cost Estimation</label>
-          <input type="number" placeholder="Insert a cost estimation..." required />
+          <input type="number" name="cost_estimation" placeholder="Insert a cost estimation..." required />
+          <div class="error-message" id="error-cost_estimation"></div>
         </div>
 
         <div class="form-group">
-          <label>Cooking Time</label>
-          <input type="number" placeholder="Insert a cooking time..." required />
+          <label>Cooking Time (minutes)</label>
+          <input type="number" name="cooking_time" placeholder="Insert a cooking time..." required />
+          <div class="error-message" id="error-cooking_time"></div>
         </div>
 
         <div class="form-group">
           <label>Ingredients</label>
-          <input type="text" placeholder="Enter ingredients..." required />
+          <textarea name="ingredients" rows="3" placeholder="Enter ingredients..." required></textarea>
+          <div class="error-message" id="error-ingredients"></div>
         </div>
 
+        <!-- Custom Upload Area -->
         <div class="form-group">
           <label>Food Image</label>
-          <div style="border: 2px dashed #ccc; padding: 20px; text-align: center; color: #999; border-radius: 10px;">
-            <img src="{{ asset('images/upload-icon.png') }}" alt="Upload" style="width: 32px; margin-bottom: 10px;" />
-            <p><strong style="color: red;">Click to Upload</strong> or drag and drop<br/>(Max. File size: 25 MB)</p>
+          <div class="custom-file-drop" id="drop-area">
+            <img src="{{ asset('images/upload-icon.png') }}" alt="Upload" />
+            <p><strong>Click to Upload</strong> or drag and drop<br/>(Max. File size: 25 MB)</p>
+            <input type="file" name="image" id="imageInput" accept="image/*" style="display: none;" />
           </div>
+          <div class="error-message" id="error-image"></div>
+          <div id="previewImage" style="margin-top: 10px;"></div>
         </div>
 
         <div class="form-group">
           <label>Instructions</label>
-          <textarea rows="5" placeholder="Provide step-by-step instructions..." required></textarea>
+          <textarea name="instructions" rows="5" placeholder="Provide step-by-step instructions..." required></textarea>
+          <div class="error-message" id="error-instructions"></div>
         </div>
 
         <div class="form-group">
           <label>Tags</label>
-          <select required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #f5cfcf; background-color: #fff0f0;">
-            <option value="">Selected Option</option>
+          <select name="tag" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #f5cfcf; background-color: #fff0f0;">
+            <option value="">Select Option</option>
             <option value="Snack">Snack</option>
             <option value="Drink">Drink</option>
             <option value="Dessert">Dessert</option>
             <option value="Rice">Rice</option>
-            <option value="Sea Food">Sea Food</option>
+            <option value="Seafood">Sea Food</option>
             <option value="Salad">Salad</option>
             <option value="Bread">Bread</option>
             <option value="Noodle">Noodle</option>
           </select>
+          <div class="error-message" id="error-tag"></div>
         </div>
 
         <div style="margin-top: 30px;">
@@ -625,14 +661,160 @@ select {
     </div>
   </div>
 
-  <!-- Script to show popup -->
+  <!-- Scripts -->
   <script>
     const form = document.getElementById('addRecipeForm');
     const popup = document.getElementById('success-popup');
+    const dropArea = document.getElementById('drop-area');
+    const imageInput = document.getElementById('imageInput');
+    const previewImage = document.getElementById('previewImage');
 
-    form.addEventListener('submit', function(e) {
+    // Show file picker on click
+    dropArea.addEventListener('click', () => imageInput.click());
+
+    // Drag & drop
+    dropArea.addEventListener('dragover', (e) => {
       e.preventDefault();
-      popup.style.display = 'flex';
+      dropArea.classList.add('hover');
+    });
+    dropArea.addEventListener('dragleave', () => dropArea.classList.remove('hover'));
+    dropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('hover');
+      imageInput.files = e.dataTransfer.files;
+      showPreview(imageInput.files[0]);
+    });
+
+    // Show preview when file selected
+    imageInput.addEventListener('change', () => {
+      if (imageInput.files.length > 0) {
+        showPreview(imageInput.files[0]);
+      }
+    });
+
+    function showPreview(file) {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewImage.innerHTML = `<img src="${reader.result}" style="max-width: 100%; margin-top: 10px; border-radius: 10px;" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Fungsi untuk cek apakah string mengandung setidaknya 1 huruf atau angka
+    function containsAlphaNumeric(str) {
+      return /[a-zA-Z0-9]/.test(str);
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      document.querySelectorAll('.error-message').forEach(el => el.innerText = '');
+
+      // Ambil nilai dari form
+      const name = form.name.value.trim();
+      const description = form.description.value.trim();
+      const cost_estimation = Number(form.cost_estimation.value);
+      const cooking_time = Number(form.cooking_time.value);
+      const ingredients = form.ingredients.value.trim();
+      const instructions = form.instructions.value.trim();
+      const tag = form.tag.value;
+      const image = imageInput.files[0];
+
+      let isValid = true;
+
+      // Validasi Dish Name
+      if (!name || !containsAlphaNumeric(name)) {
+        document.getElementById('error-name').innerText = 'Dish name must contain at least one letter or number.';
+        isValid = false;
+      }
+
+      // Validasi Description
+      if (!description || !containsAlphaNumeric(description)) {
+        document.getElementById('error-description').innerText = 'Description must contain at least one letter or number.';
+        isValid = false;
+      }
+
+      // Validasi Cost Estimation
+      if (isNaN(cost_estimation) || cost_estimation < 1000) {
+        document.getElementById('error-cost_estimation').innerText = 'Cost estimation must be at least 1000.';
+        isValid = false;
+      }
+
+      // Validasi Cooking Time
+      if (isNaN(cooking_time) || cooking_time <= 0) {
+        document.getElementById('error-cooking_time').innerText = 'Cooking time must be greater than 0.';
+        isValid = false;
+      }
+
+      // Validasi Ingredients
+      if (!ingredients || !containsAlphaNumeric(ingredients)) {
+        document.getElementById('error-ingredients').innerText = 'Ingredients must contain at least one letter or number.';
+        isValid = false;
+      }
+
+      // Validasi Instructions
+      if (!instructions || !containsAlphaNumeric(instructions)) {
+        document.getElementById('error-instructions').innerText = 'Instructions must contain at least one letter or number.';
+        isValid = false;
+      }
+
+      // Validasi Tag
+      if (!tag) {
+        document.getElementById('error-tag').innerText = 'Please select a tag.';
+        isValid = false;
+      }
+
+      // Validasi Image (optional)
+      if (!image) {
+        document.getElementById('error-image').innerText = 'Please upload an image.';
+        isValid = false;
+      } else if (image.size > 25 * 1024 * 1024) { // 25 MB limit
+        document.getElementById('error-image').innerText = 'File size must be less than 25 MB.';
+        isValid = false;
+      }
+
+      if (!isValid) {
+        return; // Stop form submit jika ada error
+      }
+
+      // Jika validasi lolos, lanjut kirim form
+      const formData = new FormData(form);
+      try {
+        const response = await fetch('/api/recipes', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          popup.style.display = 'flex';
+          form.reset();
+          previewImage.innerHTML = '';
+        } else if (response.status === 422) {
+          const errors = result.errors;
+          for (const field in errors) {
+            const errorDiv = document.getElementById(`error-${field}`);
+            if (errorDiv) {
+              errorDiv.innerText = errors[field][0];
+            }
+          }
+        } else {
+          alert(result.message || 'Failed to create recipe.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An unexpected error occurred.');
+      }
+    });
+
+    // Close popup on click
+    popup.addEventListener('click', () => {
+      popup.style.display = 'none';
+      window.location.href = '/recipe';
     });
   </script>
 </body>

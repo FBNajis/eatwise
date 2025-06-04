@@ -45,7 +45,7 @@ class RecipeModel {
       ingredients: json['ingredients'],
       instructions: json['instructions'],
       tag: json['tag'],
-      imagePath: json['image_path'],
+      imagePath: json['image_url'],
       createdAt: json['created_at'],
       favoritesCount: json['favorites_count'],
       creatorName: json['creator_name'],
@@ -69,7 +69,7 @@ class CommentModel {
   });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
-    String? imagePath = json['user_image_path'];
+    String? imagePath = json['user_image_url'];
 
     if (imagePath != null &&
         imagePath.isNotEmpty &&

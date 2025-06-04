@@ -68,7 +68,7 @@ class RecipebasedonlikesView extends GetView<RecipebasedonlikesController> {
                 recipe['creator_name'],
                 recipe['cost_estimation'].toString(),
                 recipe['favorites_count'].toString(),
-                recipe['image_path'],
+                recipe['image_url'],
                 recipe,
               );
             },

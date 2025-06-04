@@ -23,6 +23,7 @@ Route::middleware('api')->group(function () {
     Route::post('/user/update', [UserController::class, 'update']);
 
     // Public recipe routes
+    Route::get('/recipes/{id}', [RecipeController::class, 'show']);
     Route::get('/recipes/all', [RecipeController::class, 'allRecipes']);
     Route::get('/recipes/top', [RecipeController::class, 'topRecipes']);
     Route::get('/recipes/random', [RecipeController::class, 'randomRecipes']);
@@ -31,13 +32,16 @@ Route::middleware('api')->group(function () {
     // Route for searching recipes
     Route::get('/recipes/search', [RecipeController::class, 'searchRecipes']);
 
+    // Public comment routes
+    Route::get('/recipes/{id}/comments', [RecipeController::class, 'getComments']);
+
     // Authenticated routes
     Route::middleware('auth:sanctum')->group(function () {
         // User route pakai token
         Route::get('/user', [UserController::class, 'getUserProfile']);
         Route::post('/user/update', [UserController::class, 'update']);
 
-        // Recipe CRUD
+        // Recipe CRUD operations
         Route::post('/recipes', [RecipeController::class, 'store']);
         Route::put('/recipes/{id}', [RecipeController::class, 'update']);
         Route::delete('/recipes/{id}', [RecipeController::class, 'destroy']);
@@ -45,10 +49,14 @@ Route::middleware('api')->group(function () {
         // User-specific recipe routes
         Route::get('/user/recipes', [RecipeController::class, 'userRecipes']);
         Route::get('/user/recipes/liked', [RecipeController::class, 'likedRecipes']);
+
+        // Comment routes
+        Route::post('/recipes/{id}/comments', [RecipeController::class, 'addComment']);
         
         // Like/unlike routes
         Route::post('/recipes/{id}/like', [RecipeController::class, 'like']);
         Route::delete('/recipes/{id}/unlike', [RecipeController::class, 'unlike']);
+        Route::get('/recipes/{id}/check-like', [RecipeController::class, 'checkLike']);
         Route::get('/recipes/liked', [RecipeController::class, 'likedRecipes']);
     });
 

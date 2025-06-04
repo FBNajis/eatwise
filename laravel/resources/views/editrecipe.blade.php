@@ -367,7 +367,7 @@ body {
 
 /* === CSS FILTER === */
 body {
-  background: #f9f9f9;
+  background: #ffffff;
 }
 
 .sidebar {
@@ -548,30 +548,8 @@ select {
 </style>
 </head>
 <body>
+  @include('components.sidebar')
   <div class="container">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="{{ asset('images/eatwise.png') }}" alt="Eatwise Logo" style="width: 150px; user-select:none;" />
-      </div>
-      <nav class="menu">
-        <button class="menu-btn">
-          <img src="{{ asset('images/explore.png') }}" alt="Explore Icon" class="icon" />
-          Explore
-        </button>
-        <button class="menu-btn active">
-          <img src="{{ asset('images/recipe.png') }}" alt="Recipe Icon" class="icon" />
-          Recipe
-        </button>
-        <button class="menu-btn">
-          <img src="{{ asset('images/chatbot.png') }}" alt="Chatbot Icon" class="icon" />
-          Chatbot
-        </button>
-        <button class="menu-btn">
-          <img src="{{ asset('images/profile.png') }}" alt="Profile Icon" class="icon" />
-          Profile
-        </button>
-      </nav>
-    </aside>
 
   <!-- Main Content -->
   <main class="main-content">

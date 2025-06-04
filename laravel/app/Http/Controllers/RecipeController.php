@@ -133,6 +133,19 @@ class RecipeController extends Controller
             'data' => $recipes,
         ]);
     }
+    public function show($id)
+    {
+        $recipe = Recipe::select('id', 'user_id', 'name', 'description', 'cost_estimation', 'cooking_time', 'ingredients', 'instructions', 'tag', 'image_path', 'created_at')
+            ->with(['user:id,fullname'])
+            ->withCount('favorites')
+            ->approved()
+            ->findOrFail($id);
+
+        return response()->json([
+            'message' => 'Recipe retrieved successfully',
+            'data' => $this->formatRecipeResponse($recipe),
+        ]);
+    }
 
     public function store(Request $request)
     {
@@ -245,6 +258,56 @@ class RecipeController extends Controller
         ]);
     }
 
+    public function getComments($recipeId)
+    {
+        $recipe = Recipe::findOrFail($recipeId);
+
+        $comments = $recipe->comments()
+            ->with('user:id,username,image_path')  // Include image_path in the query
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($comment) {
+                return [
+                    'id' => $comment->id,
+                    'username' => $comment->user->username,
+                    'comment' => $comment->comment,
+                    'created_at' => $comment->created_at->toDateTimeString(),
+                    'user_image_path' => $comment->user->image_path, // Include user profile image
+                ];
+            });
+
+        return response()->json([
+            'message' => 'Comments retrieved successfully',
+            'comment_count' => $comments->count(),
+            'data' => $comments,
+        ]);
+    }
+
+    public function addComment(Request $request, $recipeId)
+    {
+        $recipe = Recipe::findOrFail($recipeId);
+
+        $validated = $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $comment = Comment::create([
+            'user_id' => $request->user()->id,
+            'recipe_id' => $recipeId,
+            'comment' => $validated['comment'],
+        ]);
+
+        return response()->json([
+            'message' => 'Comment added successfully',
+            'data' => [
+                'id' => $comment->id,
+                'username' => $request->user()->username,  // Display username
+                'comment' => $comment->comment,
+                'created_at' => $comment->created_at->toDateTimeString(),
+            ],
+        ]);
+    }
+
     public function like(Request $request, $id)
     {
         $recipe = Recipe::findOrFail($id);
@@ -292,7 +355,8 @@ class RecipeController extends Controller
             'ingredients' => $recipe->ingredients,
             'instructions' => $recipe->instructions,
             'tag' => $recipe->tag,
-            'image_path' => $recipe->image_path ? url('storage/' . $recipe->image_path) : null,
+            'image_path' => $recipe->image_path ? asset('storage/' . $recipe->image_path) : null,
+            'image_url' => $recipe->image_path ? url('storage/' . $recipe->image_path) : null,
             'created_at' => $recipe->created_at,
             'favorites_count' => $recipe->favorites_count ?? $recipe->favorites()->count(),
             'creator_name' => $recipe->user->fullname,
