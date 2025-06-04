@@ -498,43 +498,34 @@
                     <p>Please enter code verification from your email</p>
                 </div>
 
-                <form>
+                <form id="otpForm">
                     <div class="code-input-container">
-                        <input type="text" class="code-input" maxlength="1" value="2">
-                        <input type="text" class="code-input" maxlength="1" value="1">
-                        <input type="text" class="code-input" maxlength="1" value="6">
-                        <input type="text" class="code-input" maxlength="1" value="7">
+                        <input type="text" class="code-input" maxlength="1" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" class="code-input" maxlength="1" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" class="code-input" maxlength="1" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" class="code-input" maxlength="1" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
                     </div>
 
                     <div class="resend-text">
-                        If you didn't receive a code, <a href="#" class="resend-link">Resend</a>
+                        If you didn't receive a code, 
+                        <a href="#" id="resendLink" class="resend-link">Resend (<span id="countdown">60</span>s)</a>
                     </div>
 
-                    <button type="submit" class="send-btn" onclick="window.location.href='/forgotpassword_fillpassword'">Send</button>
+                    <button type="submit" class="send-btn" id="sendBtn">Send</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
-        // Carousel functionality
         let currentSlide = 0;
         const slides = document.querySelectorAll('.carousel-slide');
         const dots = document.querySelectorAll('.dot');
         const totalSlides = slides.length;
 
         function showSlide(index) {
-            // Hide all slides
-            slides.forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // Update dots
-            dots.forEach(dot => {
-                dot.classList.remove('active');
-            });
-            
-            // Show current slide
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
             slides[index].classList.add('active');
             dots[index].classList.add('active');
         }
@@ -544,69 +535,151 @@
             showSlide(currentSlide);
         }
 
-        // Auto-advance carousel every 5 seconds
         setInterval(nextSlide, 5000);
 
-        // Manual dot navigation
         dots.forEach((dot, index) => {
             dot.addEventListener('click', () => {
                 currentSlide = index;
                 showSlide(currentSlide);
             });
         });
+        const email = sessionStorage.getItem('resetEmail'); 
+    
 
-        // Code input functionality
+      
+        if (!email) alert('Email tidak ditemukan, mohon kembali ke halaman sebelumnya.');
+
+        const otpForm = document.getElementById('otpForm');
         const codeInputs = document.querySelectorAll('.code-input');
-        
-        codeInputs.forEach((input, index) => {
-            input.addEventListener('input', function(e) {
-                const value = e.target.value;
-                
-                // Only allow numbers
-                if (!/^\d*$/.test(value)) {
-                    e.target.value = '';
-                    return;
-                }
-                
-                // Move to next input if current is filled
-                if (value.length === 1 && index < codeInputs.length - 1) {
-                    codeInputs[index + 1].focus();
-                }
-            });
-            
-            input.addEventListener('keydown', function(e) {
-                // Move to previous input on backspace
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    codeInputs[index - 1].focus();
-                }
-            });
-            
-            // Clear default values on focus for better UX
-            input.addEventListener('focus', function(e) {
-                e.target.select();
-            });
-        });
+        const resendLink = document.getElementById('resendLink');
+        const countdownSpan = document.getElementById('countdown');
+        const sendBtn = document.getElementById('sendBtn');
 
-        // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get all code values
-            const code = Array.from(codeInputs).map(input => input.value).join('');
-            
-            if (code.length !== 4) {
-                alert('Please enter the complete 4-digit verification code.');
-                return;
+        let isLoading = false;
+        let isResendAvailable = true;
+        let countdown = 60;
+        let countdownInterval = null;
+
+        function setLoading(state) {
+            isLoading = state;
+            sendBtn.disabled = state;
+            resendLink.style.pointerEvents = state || !isResendAvailable ? 'none' : 'auto';
+        }
+
+        function startCountdown() {
+            countdown = 60;
+            countdownSpan.textContent = countdown;
+            isResendAvailable = false;
+            resendLink.style.pointerEvents = 'none';
+
+        countdownInterval = setInterval(() => {
+                countdown--;
+                countdownSpan.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                isResendAvailable = true;
+                resendLink.style.pointerEvents = 'auto';
+                countdownSpan.textContent = '';
+            }
+        }, 1000);
+        }
+
+        async function sendOtp(email) {
+            setLoading(true);
+            try {
+                const res = await fetch('/api/check-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message || 'OTP sent successfully.');
+                    startCountdown();
+                } else {
+                    alert(data.message || 'Failed to send OTP.');
+                }
+            } catch (e) {
+                alert('Error sending OTP: ' + e.message);
+                console.error('Send OTP error:', e);
+            } finally {
+                setLoading(false);
             }
             
-            alert(`Verification code entered: ${code}\nVerification functionality would be implemented here!`);
+        }
+
+
+        async function verifyOtp(email, otpCode) {
+            setLoading(true);
+
+            try {
+                const res = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp: otpCode }),
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert(data.message || 'OTP verified successfully.');
+
+                    sessionStorage.setItem('verifiedEmail', email);
+
+                    window.location.href = '/forgotpassword_fillpassword';
+                    return true;
+                } else {
+                    alert(data.message || 'Invalid OTP.');
+                    return false;
+                }
+            } catch (e) {
+                alert('Failed to verify OTP.');
+                return false;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+
+
+
+        resendLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!isResendAvailable) return;
+            sendOtp(email);
         });
 
-        // Resend link handler
-        document.querySelector('.resend-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Resend code functionality would be implemented here!');
+        codeInputs.forEach((input, idx) => {
+            input.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if (!/^\d*$/.test(val)) e.target.value = '';
+                else if (val.length === 1 && idx < codeInputs.length -1) {
+                codeInputs[idx + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+                codeInputs[idx - 1].focus();
+                }
+            });
+            input.addEventListener('focus', (e) => e.target.select());
         });
-    </script>
+
+        otpForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const otpCode = Array.from(codeInputs).map(i => i.value).join('');
+            if (otpCode.length !== 4) {
+                alert('Please enter the complete 4-digit code.');
+                return;
+            }
+                await verifyOtp(email, otpCode,);
+        });
+
+        if (email) {
+            sendOtp(email);
+        }
+
+  </script>
+
 </body>
 </html>

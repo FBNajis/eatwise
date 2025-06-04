@@ -223,6 +223,13 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   overflow: hidden;
   background: white;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
 .card img {
@@ -324,125 +331,150 @@ body {
 </head>
 <body>
   @include('components.sidebar')
-  
+
   <div class="container">
-    
     <main class="main-content">
       <div class="header-wrapper">
         <header class="header">
           <div>
             <h1>Create Your Recipe</h1>
             <p>Create and share your delicious recipes with ease.</p>
-          <button class="create-btn" onclick="window.location.href='/addrecipe'">
-            <img src="{{ asset('images/plus.png') }}" alt="Plus Icon" />
-            <span>Create Recipe</span>
-          </button>
+            <button class="create-btn" onclick="window.location.href='/addrecipe'">
+              <img src="{{ asset('images/plus.png') }}" alt="Plus Icon" />
+              <span>Create Recipe</span>
+            </button>
           </div>
-        <div class="header-img">
-          <img src="{{ asset('images/cookie.png') }}" alt="Food Banner" />
-        </div>
+          <div class="header-img">
+            <img src="{{ asset('images/cookie.png') }}" alt="Food Banner" />
+          </div>
         </header>
 
         <div class="search-bar">
-          <input type="text" placeholder="Search recipe...">
+          <input id="searchInput" type="text" placeholder="Search recipe..." />
           <button class="filter-btn" onclick="window.location.href='/filter'">
             <img src="{{ asset('images/filter.png') }}" alt="Filter" />
           </button>
         </div>
       </div>
 
-      <section class="recommendation">
-        <div class="section-header">
-          <h2>Tuesday, 22 March 2025</h2>
-          <a href="#">View All</a>
-        </div>
-
-        <div class="card-list">
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" />
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sate Ayam Pak Slamet</h4>
-            <p class="info">
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sempolan Ayam Giling</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Bakso Daging Ayam</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-        </div>
-
-        <div class="section-header" style="margin-top: 40px;">
-          <h2>Tuesday, 22 March 2025</h2>
-          <a href="#">View All</a>
-        </div>
-
-        <div class="card-list">
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" />
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sate Ayam Pak Slamet</h4>
-            <p class="info">
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sempolan Ayam Giling</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Bakso Daging Ayam</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-        </div>
+      <section class="recommendation" id="recipeSection">
+        <!-- Dynamic content will be inserted here -->
       </section>
     </main>
   </div>
 
   <script>
-    // Display current date and time
-    function updateDateTime() {
-      const now = new Date();
-      const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      };
-      const dateTimeString = now.toLocaleDateString('en-US', options);
-      document.getElementById('currentDate').textContent = dateTimeString;
+    let allRecipes = {}; // Menyimpan semua data resep yang di-load dari API
+
+    async function loadUserRecipes() {
+      const token = localStorage.getItem('token'); 
+      const section = document.getElementById('recipeSection');
+      section.innerHTML = '<p>Loading recipes...</p>';
+
+      try {
+        const response = await fetch('/api/user/recipes', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch recipes.');
+
+        const result = await response.json();
+        allRecipes = result.data;
+
+        if (!allRecipes || Object.keys(allRecipes).length === 0) {
+          section.innerHTML = '<p>No recipes found.</p>';
+          return;
+        }
+
+        renderRecipes(allRecipes);
+
+      } catch (error) {
+        section.innerHTML = `<p style="color: red;">${error.message}</p>`;
+      }
     }
-    
-    updateDateTime();
-    setInterval(updateDateTime, 60000); // Update every minute
+
+    // Fungsi untuk render resep ke HTML berdasarkan objek resep yang diberikan
+    function renderRecipes(groupedData) {
+      const section = document.getElementById('recipeSection');
+      section.innerHTML = '';
+
+      for (const [date, recipes] of Object.entries(groupedData)) {
+        // Create section header for each date
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.innerHTML = `
+          <h2>${date}</h2>
+        `;
+        section.appendChild(header);
+
+        // Create card list container
+        const cardList = document.createElement('div');
+        cardList.className = 'card-list';
+
+        recipes.forEach(recipe => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.onclick = () => window.location.href = `/editrecipe?id=${recipe.id}`;
+
+          card.innerHTML = `
+            <img src="${recipe.image_path}" alt="${recipe.name}" />
+            <p class="author">${recipe.creator_name}</p>
+            <h4>${recipe.name}</h4>
+            <p class="info">
+              <img src="{{ asset('images/harga.png') }}" class="icon" alt="Price"> IDR ${parseInt(recipe.cost_estimation).toLocaleString()} |
+              <img src="{{ asset('images/likes.png') }}" class="icon" alt="Likes"> ${recipe.favorites_count} Likes
+            </p>
+          `;
+
+          cardList.appendChild(card);
+        });
+
+        section.appendChild(cardList);
+      }
+    }
+
+    // Fungsi untuk filter resep berdasarkan keyword pencarian
+    function filterRecipes(keyword) {
+      if (!keyword) {
+        renderRecipes(allRecipes);
+        return;
+      }
+
+      keyword = keyword.toLowerCase();
+
+      // Filter resep per tanggal
+      const filtered = {};
+
+      for (const [date, recipes] of Object.entries(allRecipes)) {
+        const filteredRecipes = recipes.filter(recipe =>
+          recipe.name.toLowerCase().includes(keyword)
+        );
+
+        if (filteredRecipes.length > 0) {
+          filtered[date] = filteredRecipes;
+        }
+      }
+
+      const section = document.getElementById('recipeSection');
+      if (Object.keys(filtered).length === 0) {
+        section.innerHTML = '<p>No recipes match your search.</p>';
+      } else {
+        renderRecipes(filtered);
+      }
+    }
+
+    // Event listener input search
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUserRecipes();
+
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        filterRecipes(e.target.value);
+      });
+    });
   </script>
 </body>
 </html>

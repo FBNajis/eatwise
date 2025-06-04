@@ -50,7 +50,7 @@ class EditdeleterecipeController extends GetxController {
     ingredientsController.text = recipe['ingredients'] ?? '';
     instructionsController.text = recipe['instructions'] ?? '';
     selectedCategory.value = recipe['tag'] ?? '';
-    existingImageUrl = recipe['image_path'];
+    existingImageUrl = recipe['image_url'];
   }
 
   Future<void> pickImageFromGallery() async {

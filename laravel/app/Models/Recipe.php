@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class Recipe extends Model
 {
@@ -35,7 +36,10 @@ class Recipe extends Model
             'fullname' => 'Unknown User'
         ]);
     }
-
+    public function comments()
+        {
+            return $this->hasMany(Comment::class);
+        }
     // Relasi ke user yang menyukai resep ini
     public function favorites()
     {
@@ -55,7 +59,7 @@ class Recipe extends Model
     public function getImageUrlAttribute()
     {
         return $this->image_path
-            ? Storage::disk('public')->url($this->image_path)
+            ? asset('storage/' . $this->image_path)
             : null;
     }
 

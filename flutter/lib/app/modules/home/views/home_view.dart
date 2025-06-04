@@ -401,7 +401,7 @@ class HomeView extends GetView<HomeController> {
               controller.topLikedRecipes[0]['creator_name'],
               controller.topLikedRecipes[0]['cost_estimation'].toString(),
               controller.topLikedRecipes[0]['favorites_count'].toString(),
-              controller.topLikedRecipes[0]['image_path'],
+              controller.topLikedRecipes[0]['image_url'],
               controller.topLikedRecipes[0],
             ),
           ),
@@ -413,7 +413,7 @@ class HomeView extends GetView<HomeController> {
                     controller.topLikedRecipes[1]['creator_name'],
                     controller.topLikedRecipes[1]['cost_estimation'].toString(),
                     controller.topLikedRecipes[1]['favorites_count'].toString(),
-                    controller.topLikedRecipes[1]['image_path'],
+                    controller.topLikedRecipes[1]['image_url'],
                     controller.topLikedRecipes[1],
                   )
                 : Container(),
@@ -598,7 +598,7 @@ class HomeView extends GetView<HomeController> {
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
               child: Image.network(
-                recipe['image_path'] ?? '',
+                recipe['image_url'] ?? '',
                 height: 120,
                 width: double.infinity,
                 fit: BoxFit.cover,

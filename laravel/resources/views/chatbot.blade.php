@@ -381,40 +381,8 @@
                     <div class="message bot">
                         <div class="message-content">
                             Welcome to<br>
-                            LiveChat
+                            eatwise 
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sample User Message -->
-            <div class="user-message-container">
-                <div class="user-message-timestamp">
-                    <span class="timestamp-text">Visitor 02:12 PM</span>
-                </div>
-                <div class="message-container user">
-                    <div class="message user">
-                        <div class="message-content">Okyy</div>
-                    </div>
-                </div>
-                <div class="message-container user">
-                    <div class="message user">
-                        <div class="message-content">Halo</div>
-                    </div>
-                </div>
-                <div class="message-container user">
-                    <div class="message user">
-                        <div class="message-content">Halo</div>
-                    </div>
-                </div>
-                <div class="message-container user">
-                    <div class="message user">
-                        <div class="message-content">Halo</div>
-                    </div>
-                </div>
-                <div class="message-container user">
-                    <div class="message user">
-                        <div class="message-content">Halo</div>
                     </div>
                 </div>
             </div>
@@ -439,6 +407,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.getElementById('sendButton');
     const messageInput = document.getElementById('messageInput');
     const chatContainer = document.getElementById('chatContainer');
+
+    async function sendToChatbotAPI(userMessage) {
+        try {
+            const response = await fetch('/api/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.choices && data.choices.length > 0) {
+                return data.choices[0].message.content;
+            } else {
+                console.error('API Error:', data);
+                return "Sorry, the chatbot failed to respond.";
+            }
+        } catch (error) {
+            console.error('Network Error:', error);
+            return "Sorry, there was a problem connecting to the chatbot.";
+        }
+    }
+
+
+
     
     // Send message functionality
     function sendMessage() {
@@ -464,11 +459,11 @@ document.addEventListener('DOMContentLoaded', function() {
             chatContainer.appendChild(userMessageContainer);
             messageInput.value = '';
             
-            // Scroll to bottom
             chatContainer.scrollTop = chatContainer.scrollHeight;
             
-            // Simulate bot response with consistent structure and chatbot image
-            setTimeout(() => {
+            setTimeout(async () => {
+                const botReply = await sendToChatbotAPI(message);
+
                 const botMessageGroup = document.createElement('div');
                 botMessageGroup.className = 'message-group';
                 botMessageGroup.innerHTML = `
@@ -480,14 +475,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img src="{{ asset('images/chatbot.png') }}" alt="Chatbot">
                         </div>
                         <div class="message bot">
-                            <div class="message-content">Thank you for your message! How can I help you today?</div>
+                            <div class="message-content">${botReply}</div>
                         </div>
                     </div>
                 `;
-                
                 chatContainer.appendChild(botMessageGroup);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }, 1000);
+
         }
     }
 

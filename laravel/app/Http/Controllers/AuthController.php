@@ -9,31 +9,48 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\OtpVerification;
 use App\Mail\SendOtpMail;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 
 
 class AuthController extends Controller
 {
+
     public function signup(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string|unique:users',
-            'fullname' => 'required|string',
-            'phone_number' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        try {
+            $request->validate([
+                'username' => 'required|string|unique:users',
+                'fullname' => 'required|string',
+                'phone_number' => 'required|string',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|string|min:6',
+            ]);
 
-        User::create([
-            'username' => $request->username,
-            'fullname' => $request->fullname,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+            User::create([
+                'username' => $request->username,
+                'fullname' => $request->fullname,
+                'phone_number' => $request->phone_number,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        return response()->json(['message' => 'Signup successful'], 200);
+            return response()->json(['message' => 'Signup successful'], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Throwable $e) {
+            Log::error('Signup Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Server error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
 
     public function login(Request $request)

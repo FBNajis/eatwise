@@ -81,7 +81,7 @@ class RecipeView extends GetView<RecipeController> {
                                 return RecipeCard(
                                   recipe: recipe,
                                   name: recipe['name'] ?? '',
-                                  imageUrl: recipe['image_path'] ?? '',
+                                  imageUrl: recipe['image_url'] ?? '',
                                   cost: controller.formatCost(
                                       recipe['cost_estimation'] ?? 0),
                                   likes:

@@ -519,16 +519,14 @@
                     <p>Please enter your email and check your email for code verification</p>
                 </div>
 
-                <form>
+                <form id="forgotForm">
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" placeholder="Enter your email..." required>
                     </div>
-
-
-                    <button type="submit" class="send-btn" onclick="window.location.href='/forgotpassword_fillotp'">Send</button>
-
+                    <button type="submit" class="send-btn" id="submitBtn">Send</button>
                 </form>
+                <div id="message" style="color: red; margin-top: 10px;"></div>
             </div>
         </div>
     </div>
@@ -551,7 +549,6 @@
                 dot.classList.remove('active');
             });
             
-            // Show current slide
             slides[index].classList.add('active');
             dots[index].classList.add('active');
         }
@@ -561,10 +558,8 @@
             showSlide(currentSlide);
         }
 
-        // Auto-advance carousel every 5 seconds
         setInterval(nextSlide, 5000);
 
-        // Manual dot navigation
         dots.forEach((dot, index) => {
             dot.addEventListener('click', () => {
                 currentSlide = index;
@@ -572,10 +567,48 @@
             });
         });
 
-        // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
+        const form = document.getElementById('forgotForm');
+        const emailInput = document.getElementById('email');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageBox = document.getElementById('message');
+
+        form.addEventListener('submit', async function (e) {
             e.preventDefault();
-            alert('Login functionality would be implemented here!');
+            const email = emailInput.value.trim();
+            messageBox.textContent = '';
+            if (!email) {
+                messageBox.textContent = 'Email harus diisi.';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
+            try {
+                const response = await fetch('http://localhost:8000/api/check-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (response.status === 200) {
+                    sessionStorage.setItem('resetEmail', email);
+                    alert("OTP Sent. Please check your email.");
+                    window.location.href = '/forgotpassword_fillotp';
+                } else if (response.status === 404) {
+                    messageBox.textContent = "Email tidak ditemukan di sistem kami.";
+                } else {
+                    messageBox.textContent = "Terjadi kesalahan. Coba lagi nanti.";
+                }
+            } catch (err) {
+                console.error(err);
+                messageBox.textContent = "Gagal terhubung ke server.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send';
+            }
         });
     </script>
 </body>
