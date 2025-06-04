@@ -23,12 +23,12 @@ Route::middleware('api')->group(function () {
     Route::post('/user/update', [UserController::class, 'update']);
 
     // Public recipe routes
-    Route::get('/recipes/{id}', [RecipeController::class, 'show']);
     Route::get('/recipes/all', [RecipeController::class, 'allRecipes']);
     Route::get('/recipes/top', [RecipeController::class, 'topRecipes']);
     Route::get('/recipes/random', [RecipeController::class, 'randomRecipes']);
     Route::get('/recipes/category', [RecipeController::class, 'catRecipes']);
     Route::get('/recipes/budget', [RecipeController::class, 'budRecipes']);
+    Route::get('/recipes/filter-combined', [RecipeController::class, 'filterCombined']);
     // Route for searching recipes
     Route::get('/recipes/search', [RecipeController::class, 'searchRecipes']);
 
@@ -61,5 +61,6 @@ Route::middleware('api')->group(function () {
     });
 
     Route::post('/chatbot', [ChatbotProxyController::class, 'handle']);
+    Route::get('/recipes/{id}', [RecipeController::class, 'show']);
 
 });

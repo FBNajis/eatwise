@@ -168,40 +168,46 @@ body {
 }
 
 .categories {
-  display: flex;
-  flex-wrap: wrap;
   margin-top: 30px;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, auto); /* Ukuran kolom menyesuaikan isi */
+  justify-content: center; /* Tengah secara horizontal */
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  max-width: 100%;
 }
 
 .category {
   background: #ffe9e9;
-  padding: 25px 30px;
-  border-radius: 15px;
-  font-size: 18px;
+  padding: 16px 24px; /* Tambahkan padding agar isi terasa luas */
+  border-radius: 12px;
+  font-size: 14px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   cursor: pointer;
-  min-width: 120px;
+  min-width: 240px; /* Lebarkan box */
+  justify-self: center; /* Pusatkan di setiap grid cell */
 }
 
+
+
 .category img {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
 }
 
 .recommendation {
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .section-header h2 {
@@ -224,8 +230,9 @@ body {
 
 .card-list {
   display: flex;
-  gap: 20px;
   flex-wrap: wrap;
+  justify-content: flex-start; /* ini bikin card mulai dari kiri */
+  gap: 3rem; /* jarak antar card, opsional */
 }
 
 .card {
@@ -299,6 +306,18 @@ body {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .categories {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .card-list {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     width: 60px;
@@ -329,6 +348,11 @@ body {
     font-size: 24px;
   }
   
+  .categories {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
   .card {
     width: 100%;
     max-width: 300px;
@@ -336,6 +360,10 @@ body {
   
   .card-list {
     justify-content: center;
+  }
+  
+  .search-bar {
+    width: 90%;
   }
 }
 </style>
@@ -351,11 +379,10 @@ body {
           <div>
             <h1>Hello, User! 👋</h1> <!-- Default, nanti diganti via JS -->
             <p>Unleash Your Culinary Creativity and Start Cooking Today!</p>
-
           </div>
-        <div class="header-img">
-          <img src="{{ asset('images/cookie.png') }}" alt="Food Banner" />
-        </div>
+          <div class="header-img">
+            <img src="{{ asset('images/cookie.png') }}" alt="Food Banner" />
+          </div>
         </header>
 
         <div class="search-bar">
@@ -366,7 +393,7 @@ body {
         </div>
       </div>
 
-      <div class="categories">
+      <div class="categories" id="categoriesSection">
         <div class="category">
           <img src="{{ asset('images/snack.png') }}" alt="Snack" />
           <span>Snack</span>
@@ -401,45 +428,180 @@ body {
         </div>
       </div>
 
-      <section class="recommendation">
+      <section class="recommendation" id="recommendationSection">
         <div class="section-header">
           <h2>Recommendation</h2>
           <a href="{{ route('recommendation') }}">View All</a>
         </div>
 
-        <div class="card-list">
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" />
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sate Ayam Pak Slamet</h4>
-            <p class="info">
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sempolan Ayam Giling</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Bakso Daging Ayam</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
+        <div class="card-list" id="recipeCardList">
+          <!-- Recipes will be loaded here -->
         </div>
+      </section>
 
+    </main>
+  </div>
 
   <script>
-    // Display current date and time
+    // Fungsi debounce: menunda eksekusi fungsi sampai user berhenti mengetik selama delay tertentu
+    function debounce(fn, delay) {
+      let timer = null;
+      return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          fn.apply(this, args);
+        }, delay);
+      };
+    }
+
+    // Format currency IDR
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    // Tampilkan daftar resep ke dalam elemen card-list
+    function displayRecipes(recipes) {
+      const cardList = document.getElementById('recipeCardList');
+      cardList.innerHTML = '';
+
+      if (!recipes || recipes.length === 0) {
+        cardList.innerHTML = '<p>No recipes found.</p>';
+        return;
+      }
+
+      recipes.forEach(recipe => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => window.location.href = `/detailrecipe?id=${recipe.id}`;
+
+        card.innerHTML = `
+          <img src="${recipe.image_path}" alt="${recipe.name}" />
+          <p class="author">${recipe.creator_name || 'Unknown Author'}</p>
+          <h4>${recipe.name}</h4>
+          <p class="info">
+            <img src="{{ asset('images/harga.png') }}" class="icon" alt="Price"> IDR ${parseInt(recipe.cost_estimation).toLocaleString()} |
+            <img src="{{ asset('images/likes.png') }}" class="icon" alt="Likes"> ${recipe.favorites_count || 0} Likes
+          </p>
+        `;
+
+        cardList.appendChild(card);
+      });
+    }
+
+    // Load top recipes (default)
+    async function loadTopRecipes() {
+      const token = localStorage.getItem('token');
+      const cardList = document.getElementById('recipeCardList');
+      
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
+      cardList.innerHTML = '<p>Loading recipes...</p>';
+
+      try {
+        const response = await fetch('/api/recipes/top?limit=4', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch recipes.');
+
+        const result = await response.json();
+        const recipes = result.data || [];
+
+        displayRecipes(recipes);
+
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
+        cardList.innerHTML = `<p style="color: red;">${error.message}</p>`;
+      }
+    }
+
+    // Search recipes by query
+    async function searchRecipes(query) {
+      const token = localStorage.getItem('token');
+      const cardList = document.getElementById('recipeCardList');
+      const categories = document.getElementById('categoriesSection');
+
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
+      if (!query) {
+        // Jika input kosong, tampilkan kategori dan load top recipes
+        categories.style.display = '';
+        loadTopRecipes();
+        return;
+      }
+
+      // Jika ada query, sembunyikan kategori
+      categories.style.display = 'none';
+
+      cardList.innerHTML = '<p>Searching recipes...</p>';
+
+      try {
+        const response = await fetch(`/api/recipes/search?query=${encodeURIComponent(query)}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch search results.');
+
+        const result = await response.json();
+        const recipes = result.data || [];
+
+        displayRecipes(recipes);
+
+      } catch (error) {
+        console.error('Search error:', error);
+        cardList.innerHTML = `<p style="color: red;">${error.message}</p>`;
+      }
+    }
+
+    // Debounced version of searchRecipes (delay 500ms)
+    const debouncedSearch = debounce((e) => {
+      const query = e.target.value.trim();
+      searchRecipes(query);
+    }, 500);
+
+    // Inisialisasi halaman dan event listener search input
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const headerTitle = document.querySelector('.header h1');
+      if (headerTitle && user.username) {
+        headerTitle.textContent = `Hello, ${user.username}! 👋`;
+      }
+
+      // Load default top recipes
+      loadTopRecipes();
+
+      // Pasang event listener input search dengan debounce
+      const searchInput = document.querySelector('.search-bar input[type="text"]');
+      if (searchInput) {
+        searchInput.addEventListener('input', debouncedSearch);
+      }
+    });
+
+    // Update tanggal & waktu setiap menit (optional)
     function updateDateTime() {
       const now = new Date();
       const options = { 
@@ -456,27 +618,8 @@ body {
         dateElem.textContent = dateTimeString;
       }
     }
-
-    
     updateDateTime();
-    setInterval(updateDateTime, 60000); // Update every minute
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const token = localStorage.getItem('token');
-      const user = JSON.parse(localStorage.getItem('user'));
-      console.log('User from localStorage:', user);
-
-      if (!token || !user) {
-          window.location.href = '/login';
-          return;
-      }
-
-      const headerTitle = document.querySelector('.header h1');
-      if (headerTitle) {
-          headerTitle.textContent = `Hello, ${user.username || 'User'}! 👋`;
-      }
-    });
-
+    setInterval(updateDateTime, 60000);
   </script>
 </body>
 </html>

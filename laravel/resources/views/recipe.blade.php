@@ -407,7 +407,6 @@ body {
         header.className = 'section-header';
         header.innerHTML = `
           <h2>${date}</h2>
-          <a href="#">View All</a>
         `;
         section.appendChild(header);
 
@@ -418,7 +417,7 @@ body {
         recipes.forEach(recipe => {
           const card = document.createElement('div');
           card.className = 'card';
-          card.onclick = () => window.location.href = `/detailrecipe?id=${recipe.id}`;
+          card.onclick = () => window.location.href = `/editrecipe?id=${recipe.id}`;
 
           card.innerHTML = `
             <img src="${recipe.image_path}" alt="${recipe.name}" />

@@ -257,81 +257,54 @@ body {
       </header>
 
       <div class="content-wrapper">
-        <div class="recipe-grid">
-          <div class="recipe-card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" class="recipe-image" />
-            <div class="recipe-info">
-              <p class="recipe-author">Anila Dwi Lestari</p>
-              <h4 class="recipe-title">Sate Ayam Pak Slamet</h4>
-              <p class="recipe-meta">
-                <img src="{{ asset('images/harga.png') }}" alt="Price" class="meta-icon"> IDR 150.000 |
-                <img src="{{ asset('images/likes.png') }}" alt="Like" class="meta-icon"> 20 Likes
-              </p>
-            </div>
-          </div>
-
-          <div class="recipe-card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan" class="recipe-image" />
-            <div class="recipe-info">
-              <p class="recipe-author">Anila Dwi Lestari</p>
-              <h4 class="recipe-title">Sempolan Ayam Giling</h4>
-              <p class="recipe-meta">
-                <img src="{{ asset('images/harga.png') }}" alt="Price" class="meta-icon"> IDR 150.000 |
-                <img src="{{ asset('images/likes.png') }}" alt="Like" class="meta-icon"> 20 Likes
-              </p>
-            </div>
-          </div>
-
-          <div class="recipe-card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso" class="recipe-image" />
-            <div class="recipe-info">
-              <p class="recipe-author">Anila Dwi Lestari</p>
-              <h4 class="recipe-title">Bakso Daging Ayam</h4>
-              <p class="recipe-meta">
-                <img src="{{ asset('images/harga.png') }}" alt="Price" class="meta-icon"> IDR 150.000 |
-                <img src="{{ asset('images/likes.png') }}" alt="Like" class="meta-icon"> 20 Likes
-              </p>
-            </div>
-          </div>
-
-          <div class="recipe-card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" class="recipe-image" />
-            <div class="recipe-info">
-              <p class="recipe-author">Anila Dwi Lestari</p>
-              <h4 class="recipe-title">Sate Ayam Pak Slamet</h4>
-              <p class="recipe-meta">
-                <img src="{{ asset('images/harga.png') }}" alt="Price" class="meta-icon"> IDR 150.000 |
-                <img src="{{ asset('images/likes.png') }}" alt="Like" class="meta-icon"> 20 Likes
-              </p>
-            </div>
-          </div>
-
-          <div class="recipe-card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan" class="recipe-image" />
-            <div class="recipe-info">
-              <p class="recipe-author">Anila Dwi Lestari</p>
-              <h4 class="recipe-title">Sempolan Ayam Giling</h4>
-              <p class="recipe-meta">
-                <img src="{{ asset('images/harga.png') }}" alt="Price" class="meta-icon"> IDR 150.000 |
-                <img src="{{ asset('images/likes.png') }}" alt="Like" class="meta-icon"> 20 Likes
-              </p>
-            </div>
-          </div>
-
-          <div class="recipe-card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso" class="recipe-image" />
-            <div class="recipe-info">
-              <p class="recipe-author">Anila Dwi Lestari</p>
-              <h4 class="recipe-title">Bakso Daging Ayam</h4>
-              <p class="recipe-meta">
-                <img src="{{ asset('images/harga.png') }}" alt="Price" class="meta-icon"> IDR 150.000 |
-                <img src="{{ asset('images/likes.png') }}" alt="Like" class="meta-icon"> 20 Likes
-              </p>
-            </div>
-          </div>
+        <div class="recipe-grid" id="recipeContainer">
+          <!-- Cards will be generated here -->
         </div>
       </div>
     </main>
   </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch('/api/recipes/all')
+      .then(res => res.json())
+      .then(res => {
+        const recipes = res.data;
+        const container = document.getElementById('recipeContainer');
+        container.innerHTML = '';
+
+        recipes.forEach(recipe => {
+          const card = document.createElement('div');
+          card.className = 'recipe-card';
+          card.onclick = () => window.location.href = `/detailrecipe?id=${recipe.id}`;
+
+          const costFormatted = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+          }).format(recipe.cost_estimation);
+
+          const image = recipe.image_url || '{{ asset("images/default.png") }}';
+
+          card.innerHTML = `
+            <img src="${image}" alt="${recipe.name}" class="recipe-image" />
+            <div class="recipe-info">
+              <p class="recipe-author">${recipe.creator_name}</p>
+              <h4 class="recipe-title">${recipe.name}</h4>
+              <p class="recipe-meta">
+                <img src="{{ asset('images/harga.png') }}" alt="Price" class="meta-icon"> ${costFormatted} |
+                <img src="{{ asset('images/likes.png') }}" alt="Like" class="meta-icon"> ${recipe.favorites_count} Likes
+              </p>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching recipes:', error);
+        document.getElementById('recipeContainer').innerHTML = '<p>Gagal memuat resep.</p>';
+      });
+  });
+</script>
 </body>
 </html>

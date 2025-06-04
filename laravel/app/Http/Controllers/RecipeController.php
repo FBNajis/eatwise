@@ -17,7 +17,7 @@ class RecipeController extends Controller
             ->with(['user:id,fullname'])
             ->withCount('favorites')
             ->approved()
-            ->orderBy('created_at', 'desc')
+            ->orderBy('favorites_count', 'desc')
             ->get()
             ->map(fn($recipe) => $this->formatRecipeResponse($recipe));
 
@@ -112,6 +112,48 @@ class RecipeController extends Controller
 
         return response()->json([
             'message' => "Recipes under budget '$budget' retrieved successfully",
+            'data' => $recipes,
+        ]);
+    }
+
+    public function filterCombined(Request $request)
+    {
+        $category = $request->get('category');
+        $budget = $request->get('budget');
+
+        $query = Recipe::select(
+                'id', 'user_id', 'name', 'description',
+                'cost_estimation', 'cooking_time', 'ingredients',
+                'instructions', 'tag', 'image_path', 'created_at'
+            )
+            ->with(['user:id,fullname'])
+            ->withCount('favorites')
+            ->approved();
+
+        // Filter berdasarkan kategori
+        if ($category) {
+            $query->where('tag', $category);
+        }
+
+        // Filter berdasarkan budget
+        if ($budget == '<15K') {
+            $query->where('cost_estimation', '<', 15000);
+        } elseif ($budget == '15K - 30K') {
+            $query->whereBetween('cost_estimation', [15000, 30000]);
+        } elseif ($budget == '30K - 50K') {
+            $query->whereBetween('cost_estimation', [30000, 50000]);
+        } elseif ($budget == '50K - 100K') {
+            $query->whereBetween('cost_estimation', [50000, 100000]);
+        } elseif ($budget == '>100K') {
+            $query->where('cost_estimation', '>', 100000);
+        }
+
+        $recipes = $query->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($recipe) => $this->formatRecipeResponse($recipe));
+
+        return response()->json([
+            'message' => 'Filtered recipes retrieved successfully',
             'data' => $recipes,
         ]);
     }
@@ -273,7 +315,7 @@ class RecipeController extends Controller
                     'username' => $comment->user->username,
                     'comment' => $comment->comment,
                     'created_at' => $comment->created_at->toDateTimeString(),
-                    'user_image_path' => $comment->user->image_path, // Include user profile image
+                    'user_image_path' => $comment->user->image_path? asset('storage/' . $comment->user->image_path) : null, // Include user profile image
                 ];
             });
 

@@ -138,15 +138,29 @@
         }
 
         .ingredient-list {
-            list-style: none;
+            list-style: disc;
+            padding-left: 20px;
         }
+
 
         .ingredient-item {
             display: flex;
             align-items: center;
             padding: 8px 0;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            padding-left: 1.5em; /* space for bullet */
         }
+
+        .ingredient-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
 
         .ingredient-item:last-child {
             border-bottom: none;
@@ -324,8 +338,8 @@
                         </div>
                     </div>
                     
-                    <button class="add-to-favorites" id="favorite-button">
-                        <i class="fas fa-heart"></i> Add to favorites
+                    <button class="add-to-favorites" id="favorite-button" data-liked="false">
+                        <i class="far fa-heart"></i> Add to favorites
                     </button>
                 </div>
             </div>
@@ -364,13 +378,7 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const recipeId = urlParams.get('id');
-
-        if (!recipeId) {
-            alert('Recipe ID not specified!');
-        } else {
-            fetchRecipe(recipeId);
-            fetchComments(recipeId);
-        }
+        const token = localStorage.getItem('token');
 
         async function fetchRecipe(id) {
             try {
@@ -388,7 +396,6 @@
                 document.getElementById('recipe-likes').textContent = `${data.favorites_count || 0} Likes`;
                 document.getElementById('recipe-creator').textContent = data.creator_name || 'Unknown';
 
-                // Ingredients
                 const ingredientsList = document.getElementById('ingredient-list');
                 ingredientsList.innerHTML = '';
                 if (data.ingredients) {
@@ -401,15 +408,12 @@
                     });
                 }
 
-                // Instructions
                 const stepsContainer = document.getElementById('cooking-steps');
                 stepsContainer.innerHTML = '';
-                let steps = [];
-                if (Array.isArray(data.instructions)) {
-                    steps = data.instructions;
-                } else {
-                    steps = data.instructions.split('\n').map(s => s.trim()).filter(s => s !== '');
-                }
+                let steps = Array.isArray(data.instructions)
+                    ? data.instructions
+                    : data.instructions.split('\n').map(s => s.trim()).filter(s => s !== '');
+
                 steps.forEach((step, index) => {
                     const li = document.createElement('li');
                     li.classList.add('cooking-step');
@@ -422,111 +426,183 @@
             }
         }
 
-        // Fetch comments from API
         async function fetchComments(recipeId) {
             try {
-                const response = await fetch(`/api/recipes/${recipeId}/comments`);
-                if (!response.ok) throw new Error('Failed to fetch comments');
+                const response = await fetch(`/api/recipes/${recipeId}/comments`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Failed to fetch comments: ' + errorText);
+                }
+
                 const json = await response.json();
-                
+                if (!json.data || typeof json.comment_count === 'undefined') {
+                    throw new Error('Invalid response format');
+                }
+
                 displayComments(json.data);
                 updateCommentsCount(json.comment_count);
             } catch (err) {
-                console.error('Error loading comments:', err);
+                console.error('Error loading comments:', err.message);
             }
         }
 
-        // Display comments in the UI
-        function displayComments(comments) {
-            const commentsContainer = document.getElementById('comments-container');
-            commentsContainer.innerHTML = '';
-            
-            comments.forEach(comment => {
-                const commentElement = document.createElement('div');
-                commentElement.className = 'comment-item';
-                
-                const userImage = comment.user_image_path || '/images/profile.png';
-                const createdAt = new Date(comment.created_at).toLocaleDateString();
-                
-                commentElement.innerHTML = `
-                    <img src="${userImage}" alt="${comment.username} Avatar" class="comment-avatar">
-                    <div class="comment-content">
-                        <div class="comment-author">${comment.username}</div>
-                        <div class="comment-text">${comment.comment}</div>
-                        <div class="comment-date">${createdAt}</div>
-                    </div>
-                `;
-                
-                commentsContainer.appendChild(commentElement);
-            });
-        }
-
-        // Update comments count
-        function updateCommentsCount(count) {
-            const countElement = document.getElementById('comments-count');
-            countElement.textContent = `${count} Comment${count !== 1 ? 's' : ''}`;
-        }
-
-        // Add new comment via API
         async function addComment(commentText) {
+            if (!token) {
+                alert('Please login to add comments.');
+                throw new Error('Unauthorized');
+            }
+
             try {
                 const response = await fetch(`/api/recipes/${recipeId}/comments`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`,
                     },
-                    body: JSON.stringify({
-                        comment: commentText
-                    })
+                    body: JSON.stringify({ comment: commentText })
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to add comment');
+                    const errorText = await response.text();
+                    throw new Error('Server error: ' + errorText);
                 }
 
-                const json = await response.json();
-                
-                // Refresh comments after adding new one
-                fetchComments(recipeId);
-                
-                return json;
+                await fetchComments(recipeId);
             } catch (err) {
-                console.error('Error adding comment:', err);
+                console.error('Error adding comment:', err.message);
                 alert('Error adding comment: ' + err.message);
                 throw err;
             }
         }
 
-        document.getElementById('favorite-button').addEventListener('click', function () {
-            const icon = this.querySelector('i');
-            if (icon.classList.contains('fas')) {
-                icon.classList.replace('fas', 'far');
-                this.style.background = '#95a5a6';
-                this.innerHTML = '<i class="far fa-heart"></i> Added to favorites';
+        async function getUserLikedRecipes() {
+            try {
+                const response = await fetch(`http://localhost:8000/api/user/recipes/liked`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch liked recipes');
+
+                const data = await response.json();
+                return data.data || []; // perbaikan di sini
+            } catch (error) {
+                console.error('Error:', error);
+                return [];
+            }
+        }
+
+
+        async function updateFavoriteButtonState() {
+            const favoriteButton = document.getElementById('favorite-button');
+            if (!favoriteButton) return;
+
+            const likedRecipes = await getUserLikedRecipes();
+            const likedRecipeIds = likedRecipes.map(r => r.id);
+
+            if (likedRecipeIds.includes(Number(recipeId))) {
+                favoriteButton.dataset.liked = 'true'; // perbaikan di sini
+                favoriteButton.innerHTML = '<i class="fas fa-heart"></i> Added to favorites';
+                favoriteButton.style.background = '#95a5a6'; // Abu-abu
             } else {
-                icon.classList.replace('far', 'fas');
-                this.style.background = '#e74c3c';
-                this.innerHTML = '<i class="fas fa-heart"></i> Add to favorites';
+                favoriteButton.dataset.liked = 'false';
+                favoriteButton.innerHTML = '<i class="far fa-heart"></i> Add to favorites';
+                favoriteButton.style.background = '#e74c3c';
+            }
+        }
+
+
+        // === DOM HANDLERS ===
+        function displayComments(comments) {
+            const commentsContainer = document.getElementById('comments-container');
+            commentsContainer.innerHTML = '';
+
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment-item';
+
+                const userImage = comment.user_image_path || '/images/profile.png';
+                const createdAt = new Date(comment.created_at).toLocaleDateString();
+
+                commentElement.innerHTML = `
+                    <img src="${userImage}" alt="${comment.username} Avatar" class="comment-avatar">
+                    <div class="comment-content">
+                        <div class="comment-author">${comment.username}</div>
+                        <div class="comment-text">${comment.comment}</div>
+                    </div>
+                `;
+
+                commentsContainer.appendChild(commentElement);
+            });
+        }
+
+        function updateCommentsCount(count) {
+            const countElement = document.getElementById('comments-count');
+            countElement.textContent = `${count} Comment${count !== 1 ? 's' : ''}`;
+        }
+
+        // === EVENT LISTENERS ===
+        document.getElementById('favorite-button').addEventListener('click', async function () {
+            const button = this;
+            const liked = button.dataset.liked === 'true';
+            const endpoint = `http://localhost:8000/api/recipes/${recipeId}/${liked ? 'unlike' : 'like'}`;
+            const method = liked ? 'DELETE' : 'POST';
+
+            const likesCountEl = document.getElementById('recipe-likes');
+            let currentLikes = parseInt(likesCountEl.textContent) || 0;
+            likesCountEl.textContent = liked ? `${currentLikes - 1} Likes` : `${currentLikes + 1} Likes`;
+
+            if (!token) {
+                alert('Please login first.');
+                return;
+            }
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    if (liked) {
+                        button.dataset.liked = 'false'; // Mengubah ke 'false' karena sudah di-unlike
+                        button.innerHTML = '<i class="far fa-heart"></i> Add to favorites';
+                        button.style.background = '#e74c3c'; // Merah
+                    } else {
+                        button.dataset.liked = 'true'; // Disukai
+                        button.innerHTML = '<i class="fas fa-heart"></i> Added to favorites';
+                        button.style.background = '#95a5a6'; // Abu-abu
+                    }
+                } else if (response.status === 401) {
+                    alert('Please login first.');
+                } else {
+                    alert('Failed to update favorite.');
+                }
+            } catch (error) {
+                console.error('Error favoriting recipe:', error);
+                alert('Error occurred. Please try again.');
             }
         });
+
 
         document.getElementById('comment-submit').addEventListener('click', async function () {
             const textarea = document.getElementById('comment-input');
             const commentText = textarea.value.trim();
-            
+
             if (commentText) {
                 try {
-                    // Disable button to prevent double submission
                     this.disabled = true;
-                    
                     await addComment(commentText);
                     textarea.value = '';
-                } catch (err) {
-                    // Error is already handled in addComment function
+                } catch {
+                    // already handled
                 } finally {
-                    // Re-enable button
                     this.disabled = false;
                 }
             }
@@ -538,6 +614,17 @@
                 document.getElementById('comment-submit').click();
             }
         });
+
+        // === INIT ===
+        if (!recipeId) {
+            alert('Recipe ID not specified!');
+        } else {
+            fetchRecipe(recipeId);
+            fetchComments(recipeId);
+            updateFavoriteButtonState();
+        }
     </script>
+
 </body>
+
 </html>
