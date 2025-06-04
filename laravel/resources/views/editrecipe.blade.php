@@ -677,7 +677,6 @@ select {
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('An unexpected error occurred while deleting the recipe.');
       }
     });
 
