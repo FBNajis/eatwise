@@ -469,7 +469,7 @@
             <div class="popup-message">Your changes will be saved.</div>
             <div class="popup-buttons">
                 <button class="popup-btn popup-btn-no" onclick="hideConfirmationPopup()">No</button>
-                <button class="popup-btn popup-btn-yes" i onclick="confirmLogout()">Yes</button>
+                <button class="popup-btn popup-btn-yes" onclick="confirmLogout()">Yes</button>
             </div>
         </div>
     </div>
@@ -553,9 +553,16 @@
                 document.getElementById('password').value = '';
                 document.getElementById('password_confirmation').value = '';
 
-                // Simpan nilai asli gambar dan set src
-                originalImage = data.image || '/images/profile_white.png';
-                document.getElementById('profileImage').src = originalImage;
+                // Set gambar profil dengan fallback ke default
+                const profileImage = document.getElementById('profileImage');
+                if (data.image) {
+                    profileImage.src = data.image;
+                    originalImage = data.image;
+                } else {
+                    // Tetap gunakan gambar default yang sama seperti sebelumnya
+                    originalImage = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiNmMGYwZjAiLz48cGF0aCBkPSJNNTAgMzBjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJzNS4zNzMgMTIgMTIgMTJzMTItNS4zNzMgMTItMTJzLTUuMzczLTEyLTEyLTEyem0wIDQwYy0xMS4wNDYgMC0xOC0zLjI4Mi0xOC04aDM2Yy0wIDQuNzE4LTYuOTU0IDgtMTggOHoiIGZpbGw9IiM5OTk5OTkiLz48L3N2Zz4K";
+                    profileImage.src = originalImage;
+                }
 
                 // Simpan nilai asli untuk pengecekan perubahan
                 originalValues = {
@@ -583,6 +590,7 @@
                 input.disabled = disabled;
             });
         }
+        
         function checkForChanges() {
             const currentImage = document.getElementById('profileImage').src;
             const inputs = ['fullname','username', 'phone', 'email', 'password', 'password_confirmation'];
@@ -683,6 +691,7 @@
             document.getElementById('confirmationPopup').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
+        
         function confirmLogout() {
             // Hapus token dan data user
             localStorage.removeItem('token');
@@ -695,11 +704,11 @@
             // Redirect ke halaman login
             window.location.href = '/login';
         }
+        
         function cancelLogout() {
             document.getElementById('confirmationPopup').classList.remove('active');
             document.body.style.overflow = 'auto';
         }
-
 
         
         function hideConfirmationPopup() {
@@ -781,7 +790,8 @@
 
             const updatedData = await response.json();
 
-            originalImage.fullname = fullname;
+            // Update nilai asli dengan data yang baru
+            originalValues.fullname = fullname;
             originalValues.username = username;
             originalValues.phone = phone;
             originalValues.email = email;
@@ -798,6 +808,7 @@
             alert('An error occurred while updating profile.');
         }
     }
+        
         document.getElementById('editBtn').addEventListener('click', enableEdit);
         document.getElementById('cancelBtn').addEventListener('click', cancelEdit);
         document.getElementById('saveBtn').addEventListener('click', function(e) {

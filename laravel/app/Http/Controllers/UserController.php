@@ -26,7 +26,7 @@ class UserController extends Controller
                 'name' => $user->fullname,
                 'phone' => $user->phone_number,
                 'email' => $user->email,
-                'image' => $user->image ? asset('storage/' . $user->image) : null
+                'image' => $user->image_path ? asset('storage/' . $user->image_path) : null
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -65,20 +65,20 @@ class UserController extends Controller
         // Update gambar jika ada file image yang dikirim
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika ada
-            if ($user->image) {
-                Storage::disk('public')->delete($user->image);
+            if ($user->image_path) {
+                Storage::disk('public')->delete($user->image_path);
             }
 
             // Simpan gambar baru
             $imagePath = $request->file('image')->store('users', 'public');
-            $user->image = $imagePath;
+            $user->image_path = $imagePath;
         }
 
         $user->save();
 
         return response()->json([
             'message' => 'Profile updated successfully',
-            'image_url' => $user->image ? asset('storage/' . $user->image) : null
+            'image_url' => $user->image_path ? asset('storage/' . $user->image_path) : null
         ]);
     }
 }
