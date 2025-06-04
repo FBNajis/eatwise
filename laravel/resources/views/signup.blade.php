@@ -534,18 +534,25 @@
                     <p>Please provide your information to personalize your experience and start exploring the full potential of the app</p>
                 </div>
 
-                <form>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="fullname">Full Name</label>
+                        <input type="text" id="fullname" placeholder="Enter your full name..." required>
+                    </div>
+
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="username" id="username" placeholder="Enter your username..." required>
+                        <input type="text" id="username" placeholder="Enter your username..." required>
                     </div>
+
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" placeholder="Enter your email..." required>
                     </div>
+
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="phone" id="phone" placeholder="Enter your phone number..." required>
+                        <input type="tel" id="phone_number" placeholder="Enter your phone number..." required>
                     </div>
 
                     <div class="form-group">
@@ -557,85 +564,114 @@
                             </span>
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label for="password">Confirm Password</label>
+                        <label for="confirm_password">Confirm Password</label>
                         <div class="input-container" style="position: relative;">
-                            <input type="password" id="password" placeholder="Enter your confirm password..." required>
-                            <span class="password-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
-                                <i class="fa fa-eye" id="eyeIcon"></i>
-                            </span>
+                            <input type="password" id="confirm_password" placeholder="Confirm your password..." required>
                         </div>
                     </div>
 
-                    <button type="submit" class="signup-btn" onclick="window.location.href='/login'">Sign Up</button>
+                    <button type="submit" class="signup-btn">Sign Up</button>
 
                     <div class="signup-link">
                         Already Have Account? <a href="{{ route('login') }}">Login</a>
                     </div>
+
+                    <div id="signupMessage" style="margin-top: 10px; color: red;"></div>
                 </form>
+
             </div>
         </div>
     </div>
 
     <script>
-        // Carousel functionality
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.carousel-slide');
-        const dots = document.querySelectorAll('.dot');
-        const totalSlides = slides.length;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.dot');
+    let current = 0;
 
-        function showSlide(index) {
-            // Hide all slides
-            slides.forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // Update dots
-            dots.forEach(dot => {
-                dot.classList.remove('active');
-            });
-            
-            // Show current slide
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            showSlide(currentSlide);
-        }
-
-        // Auto-advance carousel every 5 seconds
-        setInterval(nextSlide, 5000);
-
-        // Manual dot navigation
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                currentSlide = index;
-                showSlide(currentSlide);
-            });
-        });
-
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            dots[i].classList.remove('active');
+            if (i === index) {
+                slide.classList.add('active');
+                dots[i].classList.add('active');
             }
+        });
+    }
+
+    setInterval(() => {
+        current = (current + 1) % slides.length;
+        showSlide(current);
+    }, 4000);
+
+    function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            eyeIcon.classList.remove("fa-eye-slash");
+            eyeIcon.classList.add("fa-eye");
+        }
+    }
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const fullname = document.getElementById('fullname').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const phone_number = document.getElementById('phone_number').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirm_password = document.getElementById('confirm_password').value;
+
+        if (password !== confirm_password) {
+        document.getElementById('signupMessage').innerText = "Passwords do not match.";
+        return;
         }
 
-        // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Login functionality would be implemented here!');
-        });
-    </script>
+
+        try {
+            const checkResponse = await fetch('/api/check-availability', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email })
+            });
+
+            const checkData = await checkResponse.json();
+
+            if (!checkResponse.ok) {
+                const errors = checkData.errors || { general: [checkData.message || "Username or Email not available"] };
+                const errorMessages = Object.values(errors).flat().join('\n');
+                document.getElementById('signupMessage').innerText = errorMessages;
+                return;
+            }
+
+            const otpResponse = await fetch('/api/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, fullname, username })
+            });
+
+            const otpData = await otpResponse.json();
+
+            if (otpResponse.ok) {
+                sessionStorage.setItem('pendingUser', JSON.stringify({ fullname, username, phone_number, email, password }));
+                sessionStorage.setItem('pendingEmail', email);
+                window.location.href = '/otp';
+            } else {
+                document.getElementById('signupMessage').innerText = otpData.message || "Failed to send OTP";
+            }
+        } catch (err) {
+            console.error(err);
+            document.getElementById('signupMessage').innerText = 'An error occurred. Please try again.';
+        }
+    });
+</script>
+
 </body>
 </html>

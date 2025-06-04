@@ -349,7 +349,7 @@ body {
       <div class="header-wrapper">
         <header class="header">
           <div>
-            <h1>Hello, Anila! 👋</h1>
+            <h1>Hello, User! 👋</h1> <!-- Default, nanti diganti via JS -->
             <p>Unleash Your Culinary Creativity and Start Cooking Today!</p>
 
           </div>
@@ -451,11 +451,32 @@ body {
         minute: '2-digit'
       };
       const dateTimeString = now.toLocaleDateString('en-US', options);
-      document.getElementById('currentDate').textContent = dateTimeString;
+      const dateElem = document.getElementById('currentDate');
+      if (dateElem) {
+        dateElem.textContent = dateTimeString;
+      }
     }
+
     
     updateDateTime();
     setInterval(updateDateTime, 60000); // Update every minute
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user'));
+      console.log('User from localStorage:', user);
+
+      if (!token || !user) {
+          window.location.href = '/login';
+          return;
+      }
+
+      const headerTitle = document.querySelector('.header h1');
+      if (headerTitle) {
+          headerTitle.textContent = `Hello, ${user.username || 'User'}! 👋`;
+      }
+    });
+
   </script>
 </body>
 </html>

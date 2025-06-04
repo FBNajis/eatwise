@@ -528,106 +528,117 @@
 
         <!-- Right Section -->
         <div class="right-section">
-            <div class="login-form">
-                <div class="form-header">
-                    <span class="wave-emoji">👋</span>
-                    <h1>Let's to Login!</h1>
-                    <p>Please provide your information to personalize your experience and start exploring the full potential of the app</p>
+            <!-- Ganti bagian <form> dengan id agar mudah diakses -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email..." required>
                 </div>
 
-                <form>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter your email..." required>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-container" style="position: relative;">
+                        <input type="password" id="password" placeholder="Enter your password..." required>
+                        <span class="password-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <i class="fa fa-eye" id="eyeIcon"></i>
+                        </span>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <div class="input-container" style="position: relative;">
-                            <input type="password" id="password" placeholder="Enter your password..." required>
-                            <span class="password-toggle" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
-                                <i class="fa fa-eye" id="eyeIcon"></i>
-                            </span>
-                        </div>
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Ingat saya</label>
                     </div>
+                    <a href="{{ route('forgotpassword_fillemail') }}" class="forgot-password">Forgot Password?</a>
+                </div>
 
+                <button type="submit" class="login-btn">Login</button>
 
-                    <div class="form-options">
-                        <div class="remember-me">
-                            <input type="checkbox" id="remember">
-                            <label for="remember">Ingat saya</label>
-                        </div>
-                        <a href="{{ route('forgotpassword_fillemail') }}" class="forgot-password">Forgot Password?</a>
-                    </div>
-                    <button type="button" class="login-btn" onclick="window.location.href='/homepage'">Login</button>
+                <div class="signup-link">
+                    Don't have an account yet? <a href="{{ route('signup') }}">Sign Up</a>
+                </div>
+            </form>
 
-                    <div class="signup-link">
-                        Don't have an account yet? <a href="{{ route('signup') }}">Sign Up</a>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 
     <script>
-        // Carousel functionality
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.carousel-slide');
-        const dots = document.querySelectorAll('.dot');
-        const totalSlides = slides.length;
+    // Carousel functionality
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.dot');
+    const totalSlides = slides.length;
 
-        function showSlide(index) {
-            // Hide all slides
-            slides.forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // Update dots
-            dots.forEach(dot => {
-                dot.classList.remove('active');
-            });
-            
-            // Show current slide
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-        }
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+    }
 
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        showSlide(currentSlide);
+    }
+
+    setInterval(nextSlide, 5000);
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            currentSlide = index;
             showSlide(currentSlide);
+        });
+    });
+
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
         }
+    }
 
-        // Auto-advance carousel every 5 seconds
-        setInterval(nextSlide, 5000);
+    // Login form handler
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-        // Manual dot navigation
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                currentSlide = index;
-                showSlide(currentSlide);
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
             });
-        });
 
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
+            const data = await response.json();
 
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('email', data.user.email);
+                window.location.href = "/homepage";
             } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
+                alert(data.message || 'Login gagal!');
             }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat login.');
         }
+    });
+</script>
 
-        // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Login functionality would be implemented here!');
-        });
-    </script>
 </body>
 </html>

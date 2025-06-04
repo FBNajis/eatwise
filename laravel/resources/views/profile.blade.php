@@ -412,6 +412,11 @@
                 
                 <form id="profileForm">
                     <div class="form-group">
+                        <label class="form-label">Fullname</label>
+                        <input type="text" name="fullname" id="fullname" class="form-input" value="" disabled>
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Username</label>
                         <input type="text" name="username" id="username" class="form-input" value="" disabled>
                     </div>
@@ -448,8 +453,8 @@
                     </div>
                     
                     <div class="button-group" id="editButtonGroup" style="display: none;">
-                        <button type="submit" class="btn btn-primary">Update Profile</button>
-                        <button type="button" class="btn btn-cancel" onclick="cancelEdit()">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="saveBtn">Update Profile</button>
+                        <button type="button" class="btn btn-cancel" id="cancelBtn" onclick="cancelEdit()">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -464,7 +469,7 @@
             <div class="popup-message">Your changes will be saved.</div>
             <div class="popup-buttons">
                 <button class="popup-btn popup-btn-no" onclick="hideConfirmationPopup()">No</button>
-                <button class="popup-btn popup-btn-yes" onclick="confirmUpdate()">Yes</button>
+                <button class="popup-btn popup-btn-yes" i onclick="confirmLogout()">Yes</button>
             </div>
         </div>
     </div>
@@ -516,53 +521,91 @@
             }
         });
         
-        // Fetch profile data
+        
         async function fetchProfile() {
             try {
-                // Simulate API call
-                const response = await new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve({
-                            username: 'Anita Dwi Lestari',
-                            phone: '081226044730',
-                            email: 'anitadwilestari@gmail.com',
-                            password: 'mypassword123',
-                            avatar: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiNmMGYwZjAiLz48cGF0aCBkPSJNNTAgMzBjLTYuNjI3IDAtMTIgNS4zNzMtMTIgMTJzNS4zNzMgMTIgMTIgMTJzMTItNS4zNzMgMTItMTJzLTUuMzczLTEyLTEyLTEyem0wIDQwYy0xMS4wNDYgMC0xOC0zLjI4Mi0xOC04aDM2Yy0wIDQuNzE4LTYuOTU0IDgtMTggOHoiIGZpbGw9IiM5OTk5OTkiLz48L3N2Zz4K'
-                        });
-                    }, 1000);
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    alert('User not authenticated. Please login.');
+                    return;
+                }
+
+                const response = await fetch('/api/user', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
                 });
-                
-                // Populate form with fetched data
-                document.getElementById('username').value = response.username;
-                document.getElementById('phone').value = response.phone;
-                document.getElementById('email').value = response.email;
-                document.getElementById('password').value = response.password;
-                document.getElementById('password_confirmation').value = response.password;
-                document.getElementById('profileImage').src = response.avatar;
-                
-                // Store original values
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile data');
+                }
+
+                const data = await response.json();
+
+                // Isi input dengan data user
+                document.getElementById('fullname').value = data.fullname || '';
+                document.getElementById('username').value = data.username || '';
+                document.getElementById('phone').value = data.phone || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('password').value = '';
+                document.getElementById('password_confirmation').value = '';
+
+                // Simpan nilai asli gambar dan set src
+                originalImage = data.image || '/images/profile_white.png';
+                document.getElementById('profileImage').src = originalImage;
+
+                // Simpan nilai asli untuk pengecekan perubahan
                 originalValues = {
-                    username: response.username,
-                    phone: response.phone,
-                    email: response.email,
-                    password: response.password,
-                    password_confirmation: response.password
+                    fullname: data.fullname || '',
+                    username: data.username || '',
+                    phone: data.phone || '',
+                    email: data.email || '',
+                    password: '',
+                    password_confirmation: ''
                 };
-                originalImage = response.avatar;
-                
+
+                // Disable semua input saat load
+                setInputsDisabled(true);
+
             } catch (error) {
                 console.error('Error fetching profile:', error);
                 alert('Failed to load profile data');
             }
         }
+
+        function setInputsDisabled(disabled) {
+            const inputs = ['fullname','username', 'phone', 'email', 'password', 'password_confirmation'];
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                input.disabled = disabled;
+            });
+        }
+        function checkForChanges() {
+            const currentImage = document.getElementById('profileImage').src;
+            const inputs = ['fullname','username', 'phone', 'email', 'password', 'password_confirmation'];
+
+            hasChanges = currentImage !== originalImage;
+
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input.value !== originalValues[id]) {
+                    hasChanges = true;
+                }
+            });
+
+            // Aktifkan tombol save hanya jika ada perubahan
+            document.getElementById('saveBtn').disabled = !hasChanges;
+        }
         
-        // Image upload functionality
         function triggerImageUpload() {
             if (isEditing) {
                 document.getElementById('avatarInput').click();
             }
         }
-        
+
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -574,21 +617,7 @@
                 reader.readAsDataURL(file);
             }
         }
-        
-        // Check for changes
-        function checkForChanges() {
-            const currentImage = document.getElementById('profileImage').src;
-            const inputs = ['username', 'phone', 'email', 'password', 'password_confirmation'];
-            
-            hasChanges = currentImage !== originalImage;
-            
-            inputs.forEach(id => {
-                const input = document.getElementById(id);
-                if (input.value !== originalValues[id]) {
-                    hasChanges = true;
-                }
-            });
-        }
+
         
         // Password toggle functionality
         function togglePassword(fieldId) {
@@ -607,46 +636,46 @@
         // Profile editing functionality
         function enableEdit() {
             isEditing = true;
-            
-            // Enable inputs
-            const inputs = ['username', 'phone', 'email', 'password', 'password_confirmation'];
+            setInputsDisabled(false);
+
+            // Clear password fields when editing
+            document.getElementById('password').value = '';
+            document.getElementById('password_confirmation').value = '';
+
+            // Reset hasChanges agar tombol Save disabled dulu
+            hasChanges = false;
+            document.getElementById('saveBtn').disabled = true;
+
+            // Tambahkan listener untuk cek perubahan
+            const inputs = ['fullname','username', 'phone', 'email', 'password', 'password_confirmation'];
             inputs.forEach(id => {
-                document.getElementById(id).disabled = false;
+                document.getElementById(id).addEventListener('input', checkForChanges);
             });
-            
-            // Add event listeners for change detection
-            inputs.forEach(id => {
-                const input = document.getElementById(id);
-                input.addEventListener('input', checkForChanges);
-            });
-            
-            // Show edit buttons, hide normal buttons
-            document.getElementById('buttonGroup').style.display = 'none';
+
+            // Tampilkan tombol Save & Cancel, sembunyikan tombol Edit
             document.getElementById('editButtonGroup').style.display = 'flex';
+            document.getElementById('buttonGroup').style.display = 'none';
         }
-        
+
+        // Cancel edit dan kembalikan nilai asli
         function cancelEdit() {
             isEditing = false;
             hasChanges = false;
-            
-            // Restore original values
-            const inputs = ['username', 'phone', 'email', 'password', 'password_confirmation'];
+
+            const inputs = ['fullname','username', 'phone', 'email', 'password', 'password_confirmation'];
             inputs.forEach(id => {
                 const input = document.getElementById(id);
                 input.value = originalValues[id];
                 input.disabled = true;
                 input.removeEventListener('input', checkForChanges);
             });
-            
-            // Restore original image
+
             document.getElementById('profileImage').src = originalImage;
-            
-            // Show normal buttons, hide edit buttons
-            document.getElementById('buttonGroup').style.display = 'flex';
+
             document.getElementById('editButtonGroup').style.display = 'none';
-            
-            // Hide success message
-            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('buttonGroup').style.display = 'flex';
+
+            document.getElementById('saveBtn').disabled = true;
         }
         
         // Popup functionality
@@ -654,6 +683,24 @@
             document.getElementById('confirmationPopup').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
+        function confirmLogout() {
+            // Hapus token dan data user
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+
+            // Tutup popup
+            document.getElementById('confirmationPopup').classList.remove('active');
+            document.body.style.overflow = 'auto';
+
+            // Redirect ke halaman login
+            window.location.href = '/login';
+        }
+        function cancelLogout() {
+            document.getElementById('confirmationPopup').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+
         
         function hideConfirmationPopup() {
             document.getElementById('confirmationPopup').classList.remove('active');
@@ -666,82 +713,104 @@
             console.log('User logged out');
         }
         
-        function performUpdate() {
-            // Simulate API update
-            setTimeout(() => {
-                // Update original values with current values
-                const inputs = ['username', 'phone', 'email', 'password', 'password_confirmation'];
-                inputs.forEach(id => {
-                    const input = document.getElementById(id);
-                    originalValues[id] = input.value;
-                    input.disabled = true;
-                    input.removeEventListener('input', checkForChanges);
-                });
-                
-                // Update original image
-                originalImage = document.getElementById('profileImage').src;
-                
-                // Show success message
-                const successMessage = document.getElementById('successMessage');
-                successMessage.style.display = 'block';
-                
-                // Show normal buttons, hide edit buttons
-                document.getElementById('buttonGroup').style.display = 'flex';
-                document.getElementById('editButtonGroup').style.display = 'none';
-                
-                isEditing = false;
-                hasChanges = false;
-                
-                // Hide success message after 3 seconds
-                setTimeout(() => {
-                    successMessage.style.display = 'none';
-                }, 3000);
-                
-            }, 500);
+        async function performUpdate() {
+            
+            if (!hasChanges) {
+                alert('No changes to save.');
+                return;
         }
-        
-        // Form submission
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
+
+        const fullname = document.getElementById('fullname').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('password_confirmation').value;
+        const imageSrc = document.getElementById('profileImage').src;
+
+        if (!fullname || !username || !phone || !email) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        if (password && password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('User not authenticated');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('fullname', fullname);
+        formData.append('username', username);
+        formData.append('phone', phone);
+        formData.append('email', email);
+        if (password) formData.append('password', password);
+
+        const avatarInput = document.getElementById('avatarInput');
+        if (avatarInput.files.length > 0) {
+            formData.append('image', avatarInput.files[0]);
+        }
+
+        try {
+            const response = await fetch('/api/user/update', {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert('Failed to update profile: ' + (errorData.message || response.statusText));
+                return;
+            }
+
+            const updatedData = await response.json();
+
+            originalImage.fullname = fullname;
+            originalValues.username = username;
+            originalValues.phone = phone;
+            originalValues.email = email;
+            originalValues.password = '';
+            originalValues.password_confirmation = '';
+            originalImage = document.getElementById('profileImage').src;
+
+            cancelEdit();
+
+            alert('Profile updated successfully!');
+
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred while updating profile.');
+        }
+    }
+        document.getElementById('editBtn').addEventListener('click', enableEdit);
+        document.getElementById('cancelBtn').addEventListener('click', cancelEdit);
+        document.getElementById('saveBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Validate form
-            const username = document.getElementById('username').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('password_confirmation').value;
-            
-            if (!username || !phone || !email || !password) {
-                alert('Please fill in all fields');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('Passwords do not match');
-                return;
-            }
-            
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            // Phone validation (basic)
-            const phoneRegex = /^[0-9+\-\s()]+$/;
-            if (!phoneRegex.test(phone)) {
-                alert('Please enter a valid phone number');
-                return;
-            }
-            
-            // Direct update without popup
             performUpdate();
         });
+        document.getElementById('avatarInput').addEventListener('change', handleImageUpload);
+        
         
         function showLogoutConfirm() {
-            showConfirmationPopup();
+            showConfirmationPopup(); // hanya menampilkan popup
         }
+
         
         // Initialize on page load
         window.addEventListener('load', function() {

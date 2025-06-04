@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\ChatbotProxyController;
 
 Route::middleware('api')->group(function () {
     // Auth routes
@@ -28,11 +29,15 @@ Route::middleware('api')->group(function () {
     Route::get('/recipes/category', [RecipeController::class, 'catRecipes']);
     Route::get('/recipes/budget', [RecipeController::class, 'budRecipes']);
     // Route for searching recipes
-    Route::get('/recipes/search', [RecipeController::class, 'searchRecipes']); // Add this line
+    Route::get('/recipes/search', [RecipeController::class, 'searchRecipes']);
 
     // Authenticated routes
     Route::middleware('auth:sanctum')->group(function () {
-        // Recipe CRUD operations
+        // User route pakai token
+        Route::get('/user', [UserController::class, 'getUserProfile']);
+        Route::post('/user/update', [UserController::class, 'update']);
+
+        // Recipe CRUD
         Route::post('/recipes', [RecipeController::class, 'store']);
         Route::put('/recipes/{id}', [RecipeController::class, 'update']);
         Route::delete('/recipes/{id}', [RecipeController::class, 'destroy']);
@@ -46,4 +51,7 @@ Route::middleware('api')->group(function () {
         Route::delete('/recipes/{id}/unlike', [RecipeController::class, 'unlike']);
         Route::get('/recipes/liked', [RecipeController::class, 'likedRecipes']);
     });
+
+    Route::post('/chatbot', [ChatbotProxyController::class, 'handle']);
+
 });

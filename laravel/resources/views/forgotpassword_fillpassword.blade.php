@@ -768,6 +768,94 @@
                 }, 300); // Small delay for smooth transition
             }, 4000);
         }
+        const email = sessionStorage.getItem('resetEmail') || ''; 
+
+        let isLoading = false;
+
+        // Toggle password visibility
+        function togglePassword(inputId, toggleElement) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = toggleElement.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+        const sendBtn = resetPasswordForm.querySelector('button[type="submit"]');
+
+        function setLoading(state) {
+            isLoading = state;
+            sendBtn.disabled = state;
+        }
+
+        resetPasswordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            // Validasi sama dengan Flutter
+            if (!password || !confirmPassword) {
+                alert('Please enter both passwords');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+
+            if (!email) {
+                alert('Email not found. Please restart the password reset process.');
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const response = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        new_password: password
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Your password has been successfully reset.');
+
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 500);
+                } else {
+                    alert(data.message || 'Failed to reset password');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Something went wrong. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+
     </script>
 </body>
 </html>

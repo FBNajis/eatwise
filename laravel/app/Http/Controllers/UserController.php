@@ -14,31 +14,25 @@ class UserController extends Controller
     public function getUserProfile(Request $request)
     {
         try {
-            $email = $request->query('email');
-
-            if (!$email) {
-                return response()->json(['message' => 'Email is required'], 400);
-            }
-
-            $user = User::where('email', $email)->first();
+            $user = $request->user();  // Ambil user dari token
 
             if (!$user) {
-                return response()->json(['message' => 'User not found'], 404);
+                return response()->json(['message' => 'User not authenticated'], 401);
             }
 
             return response()->json([
-                'user' => [
-                    'username' => $user->username,
-                    'name' => $user->fullname,
-                    'phone' => $user->phone_number,
-                    'email' => $user->email,
-                    'image' => $user->image ? asset('storage/' . $user->image) : null
-                ]
+                'fullname' => $user->fullname,
+                'username' => $user->username,
+                'name' => $user->fullname,
+                'phone' => $user->phone_number,
+                'email' => $user->email,
+                'image' => $user->image ? asset('storage/' . $user->image) : null
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function update(Request $request)
     {
