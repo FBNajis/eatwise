@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sate Ayam Pak Slamet - EatWISE</title>
+    <title>Recipe Detail - eatwise</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -365,7 +366,7 @@
                 <div id="comments-container"></div>
 
                 <div class="comment-input-section">
-                    <img src="{{ asset('images/profile.png') }}" alt="Your Avatar" class="comment-avatar">
+                    <img src="{{ asset('images/profile.png') }}" alt="Your Avatar" class="comment-avatar" id="current-user-avatar">
                     <textarea class="comment-input" placeholder="Write your comment here..." id="comment-input"></textarea>
                     <button class="comment-submit" id="comment-submit">
                         <i class="fas fa-paper-plane"></i>
@@ -379,6 +380,31 @@
         const urlParams = new URLSearchParams(window.location.search);
         const recipeId = urlParams.get('id');
         const token = localStorage.getItem('token');
+
+        async function fetchUserProfile() {
+            if (!token) return;
+            
+            try {
+                const response = await fetch('/api/user', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const json = await response.json();
+                    
+                    // Update comment avatar dengan foto profil user yang login
+                    const currentUserAvatar = document.getElementById('current-user-avatar');
+                    if (currentUserAvatar && json.image) {
+                        currentUserAvatar.src = json.image;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        }
 
         async function fetchRecipe(id) {
             try {
@@ -622,6 +648,7 @@
             fetchRecipe(recipeId);
             fetchComments(recipeId);
             updateFavoriteButtonState();
+            fetchUserProfile(); // Tambahan untuk fetch profil user
         }
     </script>
 

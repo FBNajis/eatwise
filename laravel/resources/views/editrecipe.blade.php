@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Edit Recipe - EatWise</title>
+  <title>Edit Recipe - eatwise</title>
+  <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
   <link rel="stylesheet" href="layout.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -315,9 +316,9 @@ select {
         </div>
 
         <!-- Buttons -->
-        <div style="display: flex; justify-content: space-between; margin-top: 30px; gap: 15px;">
-          <button type="button" id="deleteBtn" style="background: #d22222; color: white; padding: 15px 60px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer;">Delete</button>
-          <button type="submit" style="background: #d22222; color: white; padding: 15px 60px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer;">Edit</button>
+        <div style="display: flex; justify-content: space-between; margin-top: 30px; gap: 10px;">
+          <button type="button" id="deleteBtn" style="background: #d22222; color: white; padding: 15px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; flex: 1;">Delete</button>
+          <button type="submit" style="background: #d22222; color: white; padding: 15px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; flex: 1;">Edit</button>
         </div>
       </form>
     </main>

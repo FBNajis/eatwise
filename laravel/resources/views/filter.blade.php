@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EatWise - Budget Filter</title>
+  <title>Recipe Filter - eatwise</title>
+  <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -165,15 +166,16 @@ body {
   background-color: #f5f5f5;
 }
 
-.recipe-grid {
-  display: flex;
+/* Recipe Grid - Fixed Layout */
+#recipeCardList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 40px;
+  padding: 40px 50px;
+  background-color: #f5f5f5;
 }
 
 .card {
-  width: 250px;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   overflow: hidden;
@@ -223,8 +225,14 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .recipe-grid {
+@media (max-width: 1400px) {
+  #recipeCardList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  #recipeCardList {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -251,13 +259,9 @@ body {
     font-size: 24px;
   }
   
-  .content-wrapper {
-    padding: 20px;
-  }
-  
-  .recipe-grid {
+  #recipeCardList {
     grid-template-columns: 1fr;
-    gap: 20px;
+    padding: 20px;
   }
 }
 
@@ -266,7 +270,7 @@ body {
     font-size: 20px;
   }
   
-  .content-wrapper {
+  #recipeCardList {
     padding: 15px;
   }
 }
@@ -282,198 +286,151 @@ body {
       <div class="filter-section">
         <h3 class="filter-title">Price</h3>
         <div class="price-buttons">
-          <button class="price-btn active">< 15K</button>
-          <button class="price-btn">15K-30K</button>
-          <button class="price-btn">15K-30K</button>
-          <button class="price-btn">15K-30K</button>
+          <button class="price-btn" data-budget="<15K">< 15K</button>
+          <button class="price-btn" data-budget="15K - 30K">15K-30K</button>
+          <button class="price-btn" data-budget="30K - 50K">30K-50K</button>
+          <button class="price-btn" data-budget="50K - 100K">50K-100K</button>
+          <button class="price-btn" data-budget=">100K">> 100K</button>
         </div>
       </div>
-      
+
       <!-- Category Filter Section -->
       <div class="category-section">
         <h3 class="category-title">Category</h3>
         <div class="categories">
-          <div class="category">
+          <div class="category" data-category="Snack">
             <img src="{{ asset('images/snack.png') }}" alt="Snack" />
             <span>Snack</span>
           </div>
-          
-          <div class="category active">
+          <div class="category" data-category="Drink">
             <img src="{{ asset('images/drink.png') }}" alt="Drink" />
             <span>Drink</span>
           </div>
-          
-          <div class="category">
+          <div class="category" data-category="Dessert">
             <img src="{{ asset('images/dessert.png') }}" alt="Dessert" />
             <span>Dessert</span>
           </div>
-          
-          <div class="category">
+          <div class="category" data-category="Rice">
             <img src="{{ asset('images/rice.png') }}" alt="Rice" />
             <span>Rice</span>
           </div>
-          
-          <div class="category">
+          <div class="category" data-category="Sea Food">
             <img src="{{ asset('images/seafood.png') }}" alt="Sea Food" />
             <span>Sea Food</span>
           </div>
-          
-          <div class="category">
+          <div class="category" data-category="Salad">
             <img src="{{ asset('images/salad.png') }}" alt="Salad" />
             <span>Salad</span>
           </div>
-          
-          <div class="category">
+          <div class="category" data-category="Bread">
             <img src="{{ asset('images/bread.png') }}" alt="Bread" />
             <span>Bread</span>
           </div>
-          
-          <div class="category">
+          <div class="category" data-category="Noodle">
             <img src="{{ asset('images/noodle.png') }}" alt="Noodle" />
             <span>Noodle</span>
           </div>
         </div>
-      </div>
+    </div>
+
     </nav>
 
     <!-- Main Content -->
     <main class="main-content">
       <header class="header">
-        <h1>Recipe</h1>
+        <h1>Recipe Filter</h1>
       </header>
 
-      <div class="content-wrapper">
-        <div class="recipe-grid" id="recipeGrid">
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" />
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sate Ayam Pak Slamet</h4>
-            <p class="info">
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sempolan Ayam Giling</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Bakso Daging Ayam</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" />
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sate Ayam Pak Slamet</h4>
-            <p class="info">
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sempolan Ayam Giling</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Bakso Daging Ayam</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sateayam.png') }}" alt="Sate Ayam" />
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sate Ayam Pak Slamet</h4>
-            <p class="info">
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/sempol.png') }}" alt="Sempolan">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Sempolan Ayam Giling</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-          <div class="card" onclick="window.location.href='detailrecipe'">
-            <img src="{{ asset('images/bakso.png') }}" alt="Bakso">
-            <p class="author">Anila Dwi Lestari</p>
-            <h4>Bakso Daging Ayam</h4>
-            <p>
-              <img src="{{ asset('images/harga.png') }}" alt="Price" class="icon"> IDR 150.000 |
-              <img src="{{ asset('images/likes.png') }}" alt="Like" class="icon"> 20 Likes
-            </p>
-          </div>
-        </div>
+      <div class="card-list" id="recipeCardList">
       </div>
+
     </main>
   </div>
 
   <script>
-    // Price filter functionality
-    document.querySelectorAll('.price-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
+  let selectedBudget = null;
+  let selectedCategory = null;
 
-    // Category filter functionality
-    document.querySelectorAll('.category').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.category').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
+  const sidebar = document.getElementById('sidebar');
 
-    // Navigate to detail function
-    function goToDetail() {
-      console.log('Navigating to recipe detail...');
-      // Replace with actual navigation logic
-      // window.location.href = 'detailrecipe';
+  // Tutup sidebar saat klik luar (mobile only)
+  document.addEventListener('click', function (event) {
+    if (window.innerWidth <= 768 && sidebar && !sidebar.contains(event.target)) {
+      sidebar.classList.remove('active');
+    }
+  });
+
+  // Klik filter budget
+  document.querySelectorAll('.price-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      selectedBudget = this.dataset.budget;
+      fetchRecipes(); // Memanggil filterCombined
+    });
+  });
+
+  // Klik filter category
+  document.querySelectorAll('.category').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.category').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      selectedCategory = this.dataset.category;
+      fetchRecipes(); // Memanggil filterCombined
+    });
+  });
+
+  // Fungsi ambil data resep dari API filterCombined
+  function fetchRecipes() {
+    const params = new URLSearchParams();
+    if (selectedBudget) params.append('budget', selectedBudget);
+    if (selectedCategory) params.append('category', selectedCategory);
+
+    fetch(`/api/recipes/filter-combined?${params.toString()}`)
+      .then(response => {
+        if (!response.ok) throw new Error('Invalid response from server');
+        return response.json();
+      })
+      .then(data => {
+        displayRecipes(data.data);
+      })
+      .catch(err => {
+        console.error('Error fetching recipes:', err);
+      });
+  }
+
+  // Fungsi menampilkan resep ke halaman
+  function displayRecipes(recipes) {
+    const cardList = document.getElementById('recipeGrid') || document.getElementById('recipeCardList');
+    cardList.innerHTML = '';
+
+    if (!recipes || recipes.length === 0) {
+      cardList.innerHTML = '<p>No recipes found.</p>';
+      return;
     }
 
-    // Mobile responsive functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const sidebar = document.getElementById('sidebar');
-      
-      // Handle window resize
-      window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) {
-          sidebar.classList.remove('active');
-        }
-      });
-      
-      // Close sidebar when clicking outside on mobile
-      document.addEventListener('click', function(event) {
-        if (window.innerWidth <= 768) {
-          if (!sidebar.contains(event.target)) {
-            sidebar.classList.remove('active');
-          }
-        }
-      });
+    recipes.forEach(recipe => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.onclick = () => window.location.href = `/detailrecipe?id=${recipe.id}`;
+
+      card.innerHTML = `
+        <img src="${recipe.image_path}" alt="${recipe.name}" />
+        <p class="author">${recipe.creator_name || recipe.user?.fullname || 'Unknown Author'}</p>
+        <h4>${recipe.name}</h4>
+        <p class="info">
+          <img src="/images/harga.png" class="icon" alt="Price"> IDR ${parseInt(recipe.cost_estimation).toLocaleString()} |
+          <img src="/images/likes.png" class="icon" alt="Likes"> ${recipe.favorites_count || 0} Likes
+        </p>
+      `;
+
+      cardList.appendChild(card);
     });
-  </script>
+  }
+
+  document.addEventListener('DOMContentLoaded', fetchRecipes);
+</script>
+
+
 </body>
 </html>

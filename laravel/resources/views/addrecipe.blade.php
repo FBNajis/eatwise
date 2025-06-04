@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Add Recipe - EatWise</title>
+  <title>Add Recipe - eatwise</title>
+  <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
   <link rel="stylesheet" href="layout.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
