@@ -117,13 +117,3 @@ eatwise/
         ├── api.php    # Rute untuk API
         └── web.php    # Rute untuk website
 ```
-
-## Kontribusi
-
-Kami sangat terbuka untuk kontribusi! Jika Anda ingin membantu, silakan ikuti langkah-langkah berikut:
-
-1. **Fork** repositori ini.  
-2. Buat **branch** baru untuk fitur Anda (`git checkout -b fitur/namafitur`).  
-3. **Commit** perubahan Anda (`git commit -am 'Menambahkan fitur X'`).  
-4. **Push** ke branch Anda (`git push origin fitur/namafitur`).  
-5. Buat **Pull Request** baru.
